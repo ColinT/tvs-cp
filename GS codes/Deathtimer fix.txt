@@ -1,0 +1,10 @@
+// This GS code removes the deathtimer when you collect a star or a key.
+
+D133B17E 1302
+8136AF2A 0000
+D133B17E 1303
+8136AF2A 0000
+D133B17E 1307
+8136AF2A 0000
+D133B17E 1909
+8136AF2A 0000
