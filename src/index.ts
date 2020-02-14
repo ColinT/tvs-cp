@@ -29,8 +29,11 @@ Emulator.getEmulatorsFromTasklist()
 				},
 				json: true,
 			}).then((res) => res.token.user_id);
+			console.log('Retrieving channel ID successful: ' + channelId);
 
+			console.log('Connecting to channel points websocket');
 			generateGlobalWebSocket(channelId, emulator);
+			console.log('Websocket established. Have fun!');
 		}
 	})
 	.catch((error) => {

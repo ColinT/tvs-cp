@@ -14,16 +14,16 @@ module.exports = {
 			},
 		],
 	},
-	resolve: {
-		extensions: [ '.tsx', '.ts', '.js' ],
-		alias: {
-			'./build/Release/memoryjs$': path.resolve(__dirname, 'build/Release'),
-		},
-	},
-	output: {
-		filename: 'bundle.js',
-		path: path.resolve(__dirname, 'dist'),
-	},
+	// resolve: {
+	// 	extensions: [ '.tsx', '.ts', '.js' ],
+	// 	alias: {
+	// 		'./build/Release/memoryjs$': path.resolve(__dirname, 'build/Release'),
+	// 	},
+	// },
+	// output: {
+	// 	filename: 'bundle.js',
+	// 	path: path.resolve(__dirname, 'dist'),
+	// },
 	plugins: [
 		new CopyPlugin([
 			{
