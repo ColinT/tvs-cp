@@ -8,6 +8,7 @@
 		"start-webpack": "node dist/bundle.js",
 		"build": "tsc",
 		"package": "webpack --mode=development --config webpack.config.js",
+		"postinstall": "npm explore memoryjs -- npm run build64",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "",
