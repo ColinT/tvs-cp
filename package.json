@@ -2,7 +2,7 @@
 	"name": "tvs-cp",
 	"version": "1.0.0",
 	"description": "",
-	"main": "dist/bundle.js",
+	"main": "dist/index.js",
 	"scripts": {
 		"start": "node dist/index.js",
 		"start-webpack": "node dist/bundle.js",
