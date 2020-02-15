@@ -9,11 +9,23 @@ This project uses code from [Twitch Versus Mario](https://www.youtube.com/watch?
 
 This project is not yet available as an executable binary. **This means you have to read to use it.** I know, reading is hard, but you can do it!
 
-# 2. Setup
+# 2. Prerequisites
 
-## 2.1. NodeJS
+This is program is designed to run on a **64-bit machine**. If you have a 32-bit machine you must compile your own binaries for the various node dependencies. In particular, `memoryjs` must be rebuilt using the `build32` script.
 
-This is a NodeJS project. [Download NodeJS LTS here](https://nodejs.org/en/download/).
+**On all machines**, you will likely need to compile a binary suitable for your operating environment. This will require:
+ - Python 2.7.x or Python 3.7.x
+ - Visual Studio 2017 or newer with the "Desktop development with C++ workload"
+
+These resources must be available on your `PATH` for the compilation scripts to find and use them.
+
+Currently, the only supported emulator is Project64.
+
+# 3. Setup
+
+## 3.1. NodeJS
+
+This is a NodeJS project. The latest supported version is **10.x**. [Download NodeJS 10.x here](https://nodejs.org/dist/latest-v10.x/). You must select the correct binary for your system.
 
 After installing NodeJS, open the project directory in a terminal and install the dependencies:
 
@@ -27,7 +39,7 @@ Then build the project:
 npm run build
 ```
 
-## 2.2. Environment variables
+## 3.2. Environment variables
 
 Twitch requires an OAuth token to read channel point redemptions. You can generate an OAuth token with the correct scope using the Twitch Chat OAuth Token Generator [here](https://id.twitch.tv/oauth2/authorize?client_id=q6batx0epp608isickayubi39itsckt&redirect_uri=https%3A%2F%2Ftwitchapps.com%2Ftmi%2F&response_type=token&scope=channel%3Aread%3Aredemptions).
 
@@ -46,13 +58,13 @@ OAUTH_TOKEN=abcdefg1234567
 
 **NOTE**: Make sure `.env` is the full name of the file including the file extension.
 
-## 2.3. Channel Point Rewards
+## 3.3. Channel Point Rewards
 
 This project uses the **name** of the custom channel points rewards as the command to run. For example, a reward named `!donate` will activate the `!donate` command. You will have to create a separate reward for each command. You can find all the available commands in `commands.txt`.
 
 I recommend enabling "Skip Reward Request Queue" so that the commands do not interfere with your other rewards.
 
-# 3. Running the Project
+# 4. Running the Project
 
 Running the project correctly requires a certain order of operations:
 
