@@ -37,10 +37,15 @@ export class Emulator {
   public baseAddress: number;
   private processReadWrite: ProcessReadWrite;
 
-  public static getAllProcesses(processName?: string): Process[] {
+  /**
+   * A list of available Processes.
+   * 
+   * @param {RegExp} [processName] - Filter the results with a regular expression.
+   */
+  public static getAllProcesses(processName?: RegExp): Process[] {
     if (!!processName) {
       return memoryjs.getProcesses().filter((process: Process) => {
-        return process.szExeFile.toLowerCase().includes(processName.toLowerCase());
+        return process.szExeFile.match(processName);
       });
     } else {
       return memoryjs.getProcesses();
@@ -51,8 +56,6 @@ export class Emulator {
    * Emulator constructor.
    *
    * @param {number} processId - Process ID to load
-   * @param {number} characterId - Character ID from settings
-   * @param {boolean} [inGameChatEnabled=false] - Whether in game chat should be enabled
    */
   constructor(processId: number) {
     const processObject = memoryjs.openProcess(processId);

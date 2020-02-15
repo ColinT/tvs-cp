@@ -11,7 +11,7 @@ let socket: WebSocket;
 
 console.log('Please wait for RAM patches to be complete before selecting a file...');
 
-const emulatorList = Emulator.getAllProcesses('project64');
+const emulatorList = Emulator.getAllProcesses(/project64/i);
 console.log(emulatorList);
 
 if (emulatorList.length > 0) {
