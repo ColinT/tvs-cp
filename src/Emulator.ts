@@ -213,11 +213,11 @@ export class Emulator {
    */
 	public doEffect(effect: string) {
 		const messageBuffer = Buffer.from(effect);
-		const effectMessage = Buffer.alloc(24);
+		const effectMessage = Buffer.alloc(512);
 		const minBitsBuffer = Buffer.from([ 0x0a ]);
 		const cheerBitsBuffer = Buffer.from([ 0xff ]);
 		try {
-			messageBuffer.copy(effectMessage, 0, 0, Math.min(24, effectMessage.length));
+			messageBuffer.copy(effectMessage, 0, 0, Math.min(512, effectMessage.length));
 			effectMessage.swap32();
 			this.writeMemory(0x36affc, minBitsBuffer); // This is probably not required but is done by the original program, probably in case the streamer changed it mid-way
 			this.writeMemory(0x36f000, cheerBitsBuffer); // This is required to bypass the bits logic in the asm. We set it to 0xff to bypass any bit limit
