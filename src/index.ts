@@ -47,8 +47,9 @@ function generateGlobalWebSocket(channelId: string, emulator: Emulator) {
 
 function handleRedemption(redemptionData, emulator: Emulator) {
 	const command: string = redemptionData.data.redemption.reward.title;
+	const userInput: string = redemptionData.data.redemption.user_input;
 	console.log('Executing command: ' + command);
 	if (command.charAt(0) === '!') {
-		emulator.doEffect(command);
+		emulator.doEffect(`${command}${!!userInput ? ` ${userInput}` : ''}`);
 	}
 }
