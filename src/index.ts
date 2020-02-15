@@ -10,32 +10,34 @@ import { ChannelPointsWebSocket } from './ChannelPointsWebSocket';
 let socket: WebSocket;
 
 console.log('Please wait for RAM patches to be complete before selecting a file...');
-Emulator.getEmulatorsFromTasklist()
-  .then(async (emulatorList) => {
-    console.log(emulatorList);
 
-    if (emulatorList.length > 0) {
-      const emulator = new Emulator(emulatorList[0].pid, 0, false);
-      console.log('Emulator connection successful. Base address: ' + emulator.baseAddress.toString(16));
-      await emulator.patchMemory();
-      console.log('Emulator RAM patched successfully! You can now select a file.');
+const emulatorList = Emulator.getAllProcesses('project64');
+console.log(emulatorList);
 
-      console.log('Retrieving channel ID');
-      // Get channel id
-      const channelId = await request('https://api.twitch.tv/kraken', {
-        headers: {
-          Accept: `application/vnd.twitchtv.v5+json`,
-          Authorization: `OAuth ${process.env.OAUTH_TOKEN}`,
-        },
-        json: true,
-      }).then((res) => res.token.user_id);
+if (emulatorList.length > 0) {
+  (async () => {
+    const emulator = new Emulator(emulatorList[0].th32ProcessID);
+    console.log('Emulator connection successful. Base address: ' + emulator.baseAddress.toString(16));
+    await emulator.patchMemory();
+    console.log('Emulator RAM patched successfully! You can now select a file.');
 
-      generateGlobalWebSocket(channelId, emulator);
-    }
-  })
-  .catch((error) => {
+    console.log('Retrieving channel ID');
+    // Get channel id
+    const channelId = await request('https://api.twitch.tv/kraken', {
+      headers: {
+        Accept: `application/vnd.twitchtv.v5+json`,
+        Authorization: `OAuth ${process.env.OAUTH_TOKEN}`,
+      },
+      json: true,
+    }).then((res) => res.token.user_id);
+
+    generateGlobalWebSocket(channelId, emulator);
+  })().catch((error) => {
+    console.error('An error has occured. Program will now exit.');
     console.error(error);
+    throw error;
   });
+}
 
 function generateGlobalWebSocket(channelId: string, emulator: Emulator) {
   socket = ChannelPointsWebSocket.generateWebSocket(

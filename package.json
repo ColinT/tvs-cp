@@ -8,16 +8,14 @@
     "start-webpack": "node dist/bundle.js",
     "build": "tsc",
     "package": "webpack --mode=development --config webpack.config.js",
-    "postinstall": "npm explore memoryjs -- npm run build64 && npm explore process-list -- npm install",
+    "postinstall": "npm explore memoryjs -- npm run build64",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "csv-parse": "^4.8.5",
     "dotenv": "^8.2.0",
     "memoryjs": "^3.2.3",
-    "process-list": "^2.0.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
     "ws": "^7.2.1"
