@@ -30,8 +30,11 @@ if (emulatorList.length > 0) {
       },
       json: true,
     }).then((res) => res.token.user_id);
+    console.log('Retrieving channel ID successful: ' + channelId);
 
+    console.log('Connecting to channel points websocket');
     generateGlobalWebSocket(channelId, emulator);
+    console.log('Websocket established. Have fun!');
   })().catch((error) => {
     console.error('An error has occured. Program will now exit.');
     console.error(error);
@@ -43,7 +46,10 @@ function generateGlobalWebSocket(channelId: string, emulator: Emulator) {
   socket = ChannelPointsWebSocket.generateWebSocket(
     channelId,
     (message) => handleRedemption(message, emulator),
-    () => generateGlobalWebSocket(channelId, emulator)
+    () => {
+      console.log('Twitch server requested websocket reconnect. Automatically reconnecting...');
+      generateGlobalWebSocket(channelId, emulator);
+    }
   );
 }
 

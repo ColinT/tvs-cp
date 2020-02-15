@@ -9,6 +9,7 @@ export class ChannelPointsWebSocket {
     // Open pubsub websocket
     const wss = new WebSocket('wss://pubsub-edge.twitch.tv');
     wss.on('open', () => {
+      console.log('Websocket is now open.');
       wss.send(
         JSON.stringify({
           type: 'LISTEN',
@@ -39,6 +40,7 @@ export class ChannelPointsWebSocket {
 
         if (res.type === 'RECONNECT') {
           onReconnect();
+          wss.close();
         }
       }
     });
