@@ -149,8 +149,8 @@ export class Emulator {
 	}
 
 	/**
-	 * Injects all patch files in the 'patches' folder into the emulator RAM.
-	 */
+   * Injects all patch files in the 'patches' folder into the emulator RAM.
+   */
 	public async patchMemory(): Promise<void> {
 		const basePath = process.env.NODE_ENV === 'test' ? './build/patches' : './patches';
 		const patches = fs.readdirSync(basePath);
