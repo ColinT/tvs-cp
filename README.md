@@ -11,9 +11,9 @@ This project is not yet available as an executable binary. **This means you have
 
 # 2. Prerequisites
 
-This is program is designed to run on a **64-bit machine**. If you have a 32-bit machine you must compile your own binaries for the various node dependencies. In particular, `memoryjs` must be rebuilt using the `build32` script.
+The build scripts for the program designed to run on a **64-bit machine**. If you have a 32-bit machine you must run your own compilation instructions for the various node dependencies. In particular, `memoryjs` must be rebuilt using the `build32` script.
 
-**On all machines**, you will likely need to compile a binary suitable for your operating environment. This will require:
+**On all machines**, you will need to compile dependency binaries suitable for your operating environment. This will require:
  - Python 2.7.x or Python 3.7.x
  - Visual Studio 2017 or newer with the "Desktop development with C++ workload"
 
