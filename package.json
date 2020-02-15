@@ -1,38 +1,36 @@
 {
-	"name": "tvs-cp",
-	"version": "1.0.0",
-	"description": "",
-	"main": "dist/main.js",
-	"scripts": {
-		"start": "node dist/main.js",
-		"start-webpack": "node dist/bundle.js",
-		"build": "tsc",
-		"package": "webpack --mode=development --config webpack.config.js",
-		"postinstall": "npm explore memoryjs -- npm run build64 && ./node_modules/.bin/electron-rebuild",
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"author": "",
-	"license": "ISC",
-	"dependencies": {
-		"csv-parse": "^4.8.5",
-		"dotenv": "^8.2.0",
-		"electron": "4.0.3",
-		"memoryjs": "^3.2.3",
-		"process-list": "^2.0.0",
-		"request": "^2.88.0",
-		"request-promise": "^4.2.5",
-		"ws": "^7.2.1"
-	},
-	"devDependencies": {
-		"@types/node": "^13.7.0",
-		"@types/request-promise": "^4.1.45",
-		"@types/ws": "^7.2.1",
-		"copy-webpack-plugin": "^5.1.1",
-		"electron-rebuild": "^1.10.0",
-		"ts-loader": "^6.2.1",
-		"tslint": "^6.0.0",
-		"typescript": "^3.7.5",
-		"webpack": "^4.41.5",
-		"webpack-cli": "^3.3.10"
-	}
+  "name": "tvs-cp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "electron dist/main.js",
+    "start-webpack": "node dist/bundle.js",
+    "build": "tsc",
+    "package": "webpack --mode=development --config webpack.config.js",
+    "postinstall": "npm explore memoryjs -- npm run build64 && \"./node_modules/.bin/electron-rebuild\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "electron": "4.0.3",
+    "memoryjs": "^3.2.3",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.5",
+    "ws": "^7.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^13.7.0",
+    "@types/request-promise": "^4.1.45",
+    "@types/ws": "^7.2.1",
+    "copy-webpack-plugin": "^5.1.1",
+    "electron-rebuild": "^1.10.0",
+    "ts-loader": "^6.2.1",
+    "tslint": "^6.0.0",
+    "typescript": "^3.7.5",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
+  }
 }

@@ -1,0 +1,33 @@
+!wind 10
+!drain 10
+!heal 10
+!explode 10
+!lava 10
+!freezecam 10
+!donate 10
+!steal 10
+!metal 10
+!wing 10
+!vanish 00
+!gbj 10
+!inviswall 10
+!gravity 10
+!turn 10
+!speed 10
+!demon 100
+!bup 10
+!upsidedown 10
+!rocket 10
+!blooper 10
+!bird 10
+!halfapress 10
+!groundpound 10
+!wallbonk 10
+!shell 10
+!hotfloor 10
+!chatbox 10
+!deathtimer 10
+!fire 10
+!ice 10
+!squash 10
+!himynameismelonsucksineedtoexistinorderforthisprogramotwork 255
