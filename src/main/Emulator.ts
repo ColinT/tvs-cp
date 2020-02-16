@@ -24,7 +24,7 @@ export interface ProcessReadWrite {
   writeMemory: (offset: number, buffer: Buffer) => void;
 }
 
-import * as memoryjs from 'memoryjs';
+import * as memoryjs from '../memoryjs-node13';
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -58,32 +58,50 @@ export class Emulator {
    * @param {number} processId - Process ID to load
    */
   constructor(processId: number) {
+    console.log('Emulator constructor called with processId:', processId);
     const processObject = memoryjs.openProcess(processId);
+    console.log('Process loaded successfully');
     this.processReadWrite = {
       readMemory: (offset: number, length: number) => memoryjs.readBuffer(processObject.handle, offset, length),
       writeMemory: (offset: number, buffer: Buffer) => memoryjs.writeBuffer(processObject.handle, offset, buffer),
     };
+    console.log('Looking up base address');
     this.baseAddress = -1;
-    for (let i = 0x00000000; i <= 0xffffffff; i += 0x1000) {
-      const buf1 = this.processReadWrite.readMemory(i, 4);
-      if (typeof buf1 !== 'object') continue;
-      const val1 = buf1.readUInt32LE(0);
-      if (val1 !== 0x3c1a8032) continue;
-      const buf2 = this.processReadWrite.readMemory(i + 4, 4);
-      if (typeof buf2 !== 'object') continue;
-      const val2 = buf2.readUInt32LE(0);
-      if (val2 !== 0x275a7650) continue;
-      this.baseAddress = i;
+    try {
+      for (let i = 0x00000000; i <= 0x00000000; i += 0x1000) {
+        console.log(i);
+        var waitTill = new Date(new Date().getTime() + 100);
+        while (waitTill > new Date()) {}
+        const buf1 = this.processReadWrite.readMemory(i, 4);
+        if (typeof buf1 !== 'object') continue;
+        console.log('pog', buf1);
+        const val1 = buf1.readUInt32LE(0);
+        console.log(val1);
+        if (val1 !== 0x3c1a8032) continue;
+        console.log('test');
+        const buf2 = this.processReadWrite.readMemory(i + 4, 4);
+        if (typeof buf2 !== 'object') continue;
+        console.log('monkaHmm');
+        const val2 = buf2.readUInt32LE(0);
+        if (val2 !== 0x275a7650) continue;
+        this.baseAddress = i;
+      }
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
-    if (this.baseAddress === -1) {
-      throw new Error('Could not find base address');
-    }
+
+    // console.log('Base address:', this.baseAddress);
+    // if (this.baseAddress === -1) {
+    //   throw new Error('Could not find base address');
+    // }
   }
 
   /**
    * Injects all patch files in the 'patches' folder into the emulator RAM.
    */
   public async patchMemory(): Promise<void> {
+    console.log('Patching memory');
     const basePath = './patches';
     const patches = fs.readdirSync(basePath);
     const patchBuffersPromise: Promise<{ patchId: number; data: Buffer }>[] = [];
