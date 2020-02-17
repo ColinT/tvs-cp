@@ -15,12 +15,14 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^8.2.0",
+    "fast-levenshtein": "^2.0.6",
     "memoryjs": "^3.2.3",
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
     "ws": "^7.2.1"
   },
   "devDependencies": {
+    "@types/fast-levenshtein": "0.0.1",
     "@types/node": "^13.7.0",
     "@types/request-promise": "^4.1.45",
     "@types/ws": "^7.2.1",
