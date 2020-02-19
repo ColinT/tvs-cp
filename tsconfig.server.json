@@ -5,7 +5,8 @@
     "outDir": "./dist/server",
     "target": "es2016",
     "module": "commonjs",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "strictNullChecks": true,
   },
   "exclude": [
     "./src/client"
