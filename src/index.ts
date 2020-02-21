@@ -23,7 +23,7 @@ const characterDict = {
   rosalina: 7,
   sonic: 8,
   knuckles: 9,
-  goomba: 10,
+  // goomba: 10,
   kirby: 11,
 };
 
