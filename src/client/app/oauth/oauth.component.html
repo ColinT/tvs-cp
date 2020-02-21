@@ -3,4 +3,6 @@
     OAuth Token
   </h1>
   <a class="btn btn-primary" [href]="newTokenUrl" target="_blank">Twitch Chat OAuth Token Generator</a>
+  <mat-checkbox [checked]="tokenSaveStatus">Save OAuth Token</mat-checkbox>
+  <span>If your token invalidates or expires you still need to retrive a new one.</span>
 </div>

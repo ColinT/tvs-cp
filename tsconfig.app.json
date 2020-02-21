@@ -2,7 +2,7 @@
   "extends": "./tsconfig.client.json",
   "compilerOptions": {
     "outDir": "./client/app",
-    "types": []
+    "types": [ "node" ]
   },
   "files": [
     "src/client/main.ts",

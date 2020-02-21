@@ -14,8 +14,11 @@ import * as http from 'http';
 const server = new http.Server(app);
 const port = 3000;
 server.listen(port, () => console.log(`Listening on port ${port}`));
-
 app.use('/', express.static(path.join(__dirname, '../client')));
+
+// setup settings manager
+import { SettingsManager } from './SettingsManager';
+export const settingsManager = new SettingsManager(path.join(__dirname, './settings.json'));
 
 import api from './api/api';
 app.use('/api', api);
@@ -35,6 +38,8 @@ download({
       if (!!error) {
         console.error(error);
         process.exit(1);
+      } else {
+        process.exit(0);
       }
     });
 

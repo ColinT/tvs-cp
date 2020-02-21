@@ -16,11 +16,13 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "~9.0.1",
+    "@angular/cdk": "^9.0.1",
     "@angular/common": "~9.0.1",
     "@angular/compiler": "~9.0.1",
     "@angular/core": "~9.0.1",
     "@angular/forms": "~9.0.1",
     "@angular/localize": "^9.0.1",
+    "@angular/material": "^9.0.1",
     "@angular/platform-browser": "~9.0.1",
     "@angular/platform-browser-dynamic": "~9.0.1",
     "@angular/router": "~9.0.1",
@@ -44,7 +46,7 @@
     "@angular/cli": "~9.0.2",
     "@angular/compiler-cli": "~9.0.1",
     "@angular/language-service": "~9.0.1",
-    "@types/node": "^12.12.27",
+    "@types/node": "^12.12.28",
     "@types/request-promise": "^4.1.45",
     "@types/ws": "^7.2.1",
     "awesome-typescript-loader": "^5.2.1",
@@ -59,7 +61,11 @@
     "typescript": "~3.7.5"
   },
   "pkg": {
-    "assets": [ "./dist/client/**/*" ],
-    "targets": [ "node10-win-x64" ]
+    "assets": [
+      "./dist/client/**/*"
+    ],
+    "targets": [
+      "node10-win-x64"
+    ]
   }
 }
