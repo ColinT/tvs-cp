@@ -14,14 +14,18 @@ import * as http from 'http';
 const server = new http.Server(app);
 const port = 3000;
 server.listen(port, () => console.log(`Listening on port ${port}`));
-app.use('/', express.static(path.join(__dirname, '../client')));
+
+// Direct all api calls to the api
+import api from './api/api';
+app.use('/api', api);
+
+// Direct all non-api calls to the SPA
+app.use('/', express.static(path.join(__dirname, '../client'))); // Express will serve index.html and supporting resources
+app.use('/', (_req, res) => res.sendFile(path.join(__dirname, '../client/index.html'))); // SPA router handles all other paths
 
 // setup settings manager
 import { SettingsManager } from './SettingsManager';
 export const settingsManager = new SettingsManager(path.join(__dirname, './settings.json'));
-
-import api from './api/api';
-app.use('/api', api);
 
 // spawn client
 import * as download from 'download-chromium';
