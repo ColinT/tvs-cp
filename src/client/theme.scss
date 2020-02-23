@@ -1,27 +1,25 @@
 @use './custom-palettes' as tvs-palette;
-@import '~@angular/material/theming';
+@use '~@angular/material/theming' as angular;
 // Plus imports for other components in your app.
 
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
-@include mat-core();
+@include angular.mat-core();
 
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$tvs-app-primary: mat-palette(tvs-palette.$tvs-pink, 300);
-$tvs-app-accent: mat-palette(tvs-palette.$tvs-blue, 200, 400, 600);
+$tvs-app-primary: angular.mat-palette(tvs-palette.$tvs-pink, 300);
+$tvs-app-accent: angular.mat-palette(tvs-palette.$tvs-blue, 200, 400, 600);
 
 // The warn palette is optional (defaults to red).
-$tvs-app-warn: mat-palette($mat-yellow);
-
-$tvs-background-color: map_get($mat-blue-grey, 50);
+$tvs-app-warn: angular.mat-palette(angular.$mat-yellow);
 
 // Create the theme object (a Sass map containing all of the palettes).
-$tvs-app-theme: mat-dark-theme($tvs-app-primary, $tvs-app-accent, $tvs-app-warn);
+$tvs-app-theme: angular.mat-dark-theme($tvs-app-primary, $tvs-app-accent, $tvs-app-warn);
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-@include angular-material-theme($tvs-app-theme);
+@include angular.angular-material-theme($tvs-app-theme);

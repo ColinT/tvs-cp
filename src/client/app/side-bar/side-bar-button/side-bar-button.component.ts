@@ -8,4 +8,5 @@ import { Component, Input } from '@angular/core';
 export class SideBarButtonComponent {
   @Input() public icon?: string;
   @Input() public label?: string;
+  @Input() public routerLink?: string;
 }
