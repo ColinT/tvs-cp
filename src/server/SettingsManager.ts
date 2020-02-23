@@ -1,11 +1,14 @@
 import * as fs from 'fs';
+import * as path from 'path';
+
+import { cwd } from './app';
 
 /**
  * Manages the settings file for user settings.
  */
 export class SettingsManager {
   private _path: string;
-  private _settings: Object;
+  private _settings: Settings;
 
   /**
    * @constructor
@@ -13,9 +16,10 @@ export class SettingsManager {
    */
   constructor(path: string) {
     this._path = path;
+    console.log('path', path);
     if (!fs.existsSync(path)) {
-      // If the settings do not exist, initialize it as an empty object
-      this._settings = {};
+      // If the settings do not exist, initialize it to default settings
+      this._settings = SettingsManager.getDefaultSettings();
       this.writeFileSync();
     }
 
@@ -43,6 +47,7 @@ export class SettingsManager {
    * @returns The data.
    */
   public get(keyPath: string): any {
+    console.log(this._settings);
     const splitPaths = keyPath.split('/');
     let currentNode = this._settings;
     for (const segment of splitPaths) {
@@ -61,32 +66,46 @@ export class SettingsManager {
    * @param options.merge - Whether or not to merge the data. Otherwise unspecified fields are overwritten.
    */
   public set(keyPath: string, data: any, options: { merge: boolean } = { merge: false }) {
+    console.log(data);
     const splitPaths = keyPath.split('/');
-    let currentNode = this._settings;
-    for (const segment of splitPaths) {
-      if (currentNode[segment] === undefined) {
-        currentNode[segment] = {};
+
+    if (splitPaths[0] === undefined) {
+      // Attempting to modify root
+      if (typeof data === 'object' && data !== null) {
+        this._settings = JSON.parse(JSON.stringify(data));
       } else {
-        currentNode = currentNode[segment];
-        if (typeof currentNode !== 'object' || currentNode === null) {
+        throw new Error('Illegal operation. Root must be an object.');
+      }
+    } else {
+      let currentNode = this._settings;
+      let segment = splitPaths[0];
+
+      for (let index = 0; index < splitPaths.length; index++) {
+        segment = splitPaths[index];
+        if (currentNode[segment] === undefined) {
+          currentNode[segment] = {};
+        } else if (typeof currentNode !== 'object' || currentNode === null) {
           // This node is not an object, we have to overwrite it as an empty object
           currentNode = {};
         }
+        if (index !== splitPaths.length - 1) {
+          currentNode = currentNode[segment];
+        }
       }
-    }
 
-    if (
-      typeof currentNode === 'object' &&
-      currentNode !== null &&
-      typeof data === 'object' &&
-      data !== null &&
-      options.merge
-    ) {
-      // If the target key and data are object, and we are supposed to merge, then merge the data
-      currentNode = JSON.parse(JSON.stringify(this.recursiveMerge(data, currentNode)));
-    } else {
-      // Overwrite the data
-      currentNode = JSON.parse(JSON.stringify(data));
+      if (
+        typeof currentNode[segment] === 'object' &&
+        currentNode[segment] !== null &&
+        typeof data === 'object' &&
+        data !== null &&
+        options.merge
+      ) {
+        // If the target key and data are object, and we are supposed to merge, then merge the data
+        currentNode[segment] = JSON.parse(JSON.stringify(this.recursiveMerge(data, currentNode[segment])));
+      } else {
+        // Overwrite the data
+        currentNode[segment] = JSON.parse(JSON.stringify(data));
+      }
     }
   }
 
@@ -119,4 +138,20 @@ export class SettingsManager {
     }
     return target;
   }
+
+  public static getDefaultSettings(): Settings {
+    return {
+      oAuthTokenPath: path.join(cwd, './oauth-token.txt'),
+      oauth: {
+        tokenSaveStatus: false,
+      },
+    };
+  }
+}
+
+interface Settings {
+  oAuthTokenPath?: string;
+  oauth?: {
+    tokenSaveStatus: boolean;
+  };
 }

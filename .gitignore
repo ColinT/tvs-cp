@@ -3,3 +3,7 @@
 /dist
 /release
 /node_modules
+
+# Application settings files
+settings.json
+oauth-token.txt

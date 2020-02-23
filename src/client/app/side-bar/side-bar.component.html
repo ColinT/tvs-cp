@@ -1,18 +1,16 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">TvS CP</a>
-</nav>
+<mat-sidenav-container class="flex-fill" hasBackdrop="false">
 
-<ul class="nav flex-column">
-  <li class="nav-item">
-    <a class="nav-link active" href="#">Active</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="#">Link</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="#">Link</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link disabled" href="#">Disabled</a>
-  </li>
-</ul>
+  <mat-sidenav mode="side" disableClose="true" opened>
+    <div class="container">
+
+      <span>Sidenav Content</span>
+
+
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

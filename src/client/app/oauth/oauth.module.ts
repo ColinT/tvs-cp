@@ -1,14 +1,16 @@
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
 
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { GlobalAngularMaterialModule } from '../global-angular-material.module';
 
 import { OAuthRoutingModule } from './oauth-routing.module';
 import { OAuthComponent } from './oauth.component';
 
 @NgModule({
   declarations: [ OAuthComponent ],
-  imports: [ OAuthRoutingModule, MatCheckboxModule ],
+  imports: [ CommonModule, ReactiveFormsModule, GlobalAngularMaterialModule, OAuthRoutingModule ],
   bootstrap: [ OAuthComponent ],
   providers: [ HttpClient ],
 })

@@ -1,11 +1,16 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+export const cwd = process.cwd();
+
 import * as path from 'path';
 
 // spawn server
 import * as express from 'express';
 const app = express();
+app.use(express.text());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 import * as cors from 'cors';
 app.use(cors());
@@ -25,7 +30,13 @@ app.use('/', (_req, res) => res.sendFile(path.join(__dirname, '../client/index.h
 
 // setup settings manager
 import { SettingsManager } from './SettingsManager';
-export const settingsManager = new SettingsManager(path.join(__dirname, './settings.json'));
+export const settingsManager = new SettingsManager(path.join(cwd, './settings.json'));
+
+// setup oauth manager
+import { OAuthManager } from './OAuthManager';
+export const oAuthManager = new OAuthManager(
+  settingsManager.get('oauth/tokenSaveStatus') ? settingsManager.get('oAuthTokenPath') : undefined
+);
 
 // spawn client
 import * as download from 'download-chromium';

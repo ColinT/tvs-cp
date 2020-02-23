@@ -1,5 +1,5 @@
 import * as WebSocket from 'ws';
-import * as request from 'request-promise';
+import { default as axios } from 'axios';
 
 import { Emulator } from './Emulator';
 import { ChannelPointsWebSocket } from './ChannelPointsWebSocket';
@@ -36,13 +36,15 @@ export class Main {
   }
 
   public async getChannelId(): Promise<string> {
-    return request('https://api.twitch.tv/kraken', {
-      headers: {
-        Accept: `application/vnd.twitchtv.v5+json`,
-        Authorization: `OAuth ${process.env.OAUTH_TOKEN}`,
-      },
-      json: true,
-    }).then((res) => res.token.user_id as string);
+    return axios
+      .get('https://api.twitch.tv/kraken', {
+        headers: {
+          Accept: `application/vnd.twitchtv.v5+json`,
+          Authorization: `OAuth ${process.env.OAUTH_TOKEN}`,
+        },
+        responseType: 'json',
+      })
+      .then((res) => res.data.token.user_id as string);
   }
 
   private generateGlobalWebSocket(channelId: string, emulator: Emulator) {
