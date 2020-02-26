@@ -16,7 +16,6 @@ export class SettingsManager {
    */
   constructor(path: string) {
     this._path = path;
-    console.log('path', path);
     if (!fs.existsSync(path)) {
       // If the settings do not exist, initialize it to default settings
       this._settings = SettingsManager.getDefaultSettings();
@@ -37,7 +36,6 @@ export class SettingsManager {
    * Write settings to file.
    */
   public writeFileSync() {
-    console.log(this._path, this._settings);
     fs.writeFileSync(this._path, JSON.stringify(this._settings));
   }
 
@@ -47,7 +45,6 @@ export class SettingsManager {
    * @returns The data.
    */
   public get(keyPath: string): any {
-    console.log(this._settings);
     const splitPaths = keyPath.split('/');
     let currentNode = this._settings;
     for (const segment of splitPaths) {
@@ -66,7 +63,6 @@ export class SettingsManager {
    * @param options.merge - Whether or not to merge the data. Otherwise unspecified fields are overwritten.
    */
   public set(keyPath: string, data: any, options: { merge: boolean } = { merge: false }) {
-    console.log(data);
     const splitPaths = keyPath.split('/');
 
     if (splitPaths[0] === undefined) {

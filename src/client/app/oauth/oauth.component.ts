@@ -34,7 +34,7 @@ export class OAuthComponent implements OnInit {
 
   constructor(private http: HttpClient) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     this.checkTokenValidity();
     this.checkTokenSaveStatus();
   }
@@ -58,7 +58,6 @@ export class OAuthComponent implements OnInit {
       .get<boolean>('http://localhost:3000/api/oauth/token-save-status')
       .toPromise()
       .then((tokenIsSaved) => {
-        console.log(tokenIsSaved);
         this.tokenSaveState = tokenIsSaved ? TokenSaveState.SAVED : TokenSaveState.NOT_SAVED;
       })
       .catch((error) => {

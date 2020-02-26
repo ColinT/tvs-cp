@@ -1,24 +1,3 @@
-/**
- * @typedef {Object} Process - A memoryjs Process object
- * @see https://github.com/Rob--/memoryjs#process-object
- * @see https://docs.microsoft.com/en-us/windows/win32/api/tlhelp32/ns-tlhelp32-processentry32
- */
-export interface Process {
-  /** The process identifier */
-  th32ProcessID: number;
-  /** The identifier of the process that created this process */
-  th32ParentProcessID: number;
-  /** The number of execution threads started by the process */
-  cntThreads: number;
-  /** The base priority of any threads created by this process */
-  pcPriClassBase: number;
-  /** The name of the executable file for the process */
-  szExeFile: string;
-  dwSize?: number;
-  modBaseAddr?: number;
-  handle?: number;
-}
-
 export interface ProcessReadWrite {
   readMemory: (offset: number, length: number) => Buffer | number;
   writeMemory: (offset: number, buffer: Buffer) => void;
@@ -29,6 +8,16 @@ import * as memoryjs from 'memoryjs';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { Process } from 'types/Process';
+
+export enum EmulatorState {
+  NOT_CONNECTED = 'NOT_CONNECTED',
+  CONNECTING = 'CONNECTING',
+  CONNECTED = 'CONNECTED',
+  PATCHING = 'PATCHING',
+  PATCHED = 'PATCHED',
+}
+
 /**
  * An Emulator object represents the connection
  * to the loaded emulator.
@@ -36,6 +25,12 @@ import * as path from 'path';
 export class Emulator {
   public baseAddress: number;
   private processReadWrite: ProcessReadWrite;
+
+  private state = EmulatorState.NOT_CONNECTED;
+
+  public getState() {
+    return this.state;
+  }
 
   /**
    * A list of available Processes.
@@ -58,7 +53,15 @@ export class Emulator {
    * @param {number} processId - Process ID to load
    */
   constructor(processId: number) {
+    this.state = EmulatorState.CONNECTING;
     console.log('Emulator constructor called with processId:', processId);
+    try {
+      const processList = Emulator.getAllProcesses(/project64/i);
+      console.log(processList);
+      memoryjs.openProcess(processId);
+    } catch (error) {
+      console.log('error opening process with id', processId);
+    }
     const processObject = memoryjs.openProcess(processId);
     console.log('Process loaded successfully');
     this.processReadWrite = {
@@ -83,12 +86,14 @@ export class Emulator {
     if (this.baseAddress === -1) {
       throw new Error('Could not find base address');
     }
+    this.state = EmulatorState.CONNECTED;
   }
 
   /**
    * Injects all patch files in the 'patches' folder into the emulator RAM.
    */
   public async patchMemory(): Promise<void> {
+    this.state = EmulatorState.PATCHING;
     console.log('Patching memory');
     const basePath = './patches';
     const patches = fs.readdirSync(basePath);
@@ -110,6 +115,7 @@ export class Emulator {
     for (const patchBuffer of patchBuffers) {
       this.writeMemory(patchBuffer.patchId, patchBuffer.data.swap32());
     }
+    this.state = EmulatorState.PATCHED;
   }
 
   /**

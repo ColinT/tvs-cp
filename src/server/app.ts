@@ -38,6 +38,16 @@ export const oAuthManager = new OAuthManager(
   settingsManager.get('oauth/tokenSaveStatus') ? settingsManager.get('oAuthTokenPath') : undefined
 );
 
+// set emulator reference
+import { Emulator } from './Emulator';
+let emulator: Emulator | undefined;
+export function setEmulator(value: Emulator | undefined) {
+  emulator = value;
+}
+export function getEmulator(): Emulator | undefined {
+  return emulator;
+}
+
 // spawn client
 import * as download from 'download-chromium';
 import * as os from 'os';
