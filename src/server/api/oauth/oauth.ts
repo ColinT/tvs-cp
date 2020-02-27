@@ -16,6 +16,7 @@ router.get('/token-validity', async (req, res) => {
   try {
     res.status(200).send(await oAuthManager.getTokenValidity(scopes));
   } catch (error) {
+    console.error(error);
     res.status(500).send();
   }
 });

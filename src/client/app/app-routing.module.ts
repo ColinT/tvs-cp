@@ -10,6 +10,10 @@ const routes: Routes = [
     path: 'emulator',
     loadChildren: () => import('./emulator/emulator.module').then((m) => m.EmulatorModule),
   },
+  {
+    path: 'twitch',
+    loadChildren: () => import('./twitch/twitch.module').then((m) => m.TwitchModule),
+  },
   { path: '', redirectTo: './oauth', pathMatch: 'full' },
   { path: '**', redirectTo: '/oauth', pathMatch: 'full' },
 ];

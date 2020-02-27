@@ -1,8 +1,10 @@
 import * as WebSocket from 'ws';
+import { OAuthManager } from './OAuthManager';
 
 export class ChannelPointsWebSocket {
   public static generateWebSocket(
     channelId: string,
+    oAuthManager: OAuthManager,
     onMessage: (message: string) => void,
     onReconnect: () => void
   ): WebSocket {
@@ -15,7 +17,7 @@ export class ChannelPointsWebSocket {
           type: 'LISTEN',
           data: {
             topics: [ `channel-points-channel-v1.${channelId}` ],
-            auth_token: process.env.OAUTH_TOKEN,
+            auth_token: oAuthManager.getToken(),
           },
         })
       );

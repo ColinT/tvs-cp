@@ -70,6 +70,10 @@ export class OAuthManager {
     this._path = undefined;
   }
 
+  public getToken() {
+    return this._oAuthToken;
+  }
+
   public setToken(token: string) {
     token = token.replace(new RegExp(/^oauth:/i), '');
     this._oAuthToken = token;

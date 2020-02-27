@@ -1,0 +1,40 @@
+<div class="container">
+  <h1 class="display-4">
+    Connect to Twitch
+  </h1>
+  <div>
+    <p>
+      Open the PubSub Websocket to begin listening to channel point redemptions.
+    </p>
+  </div>
+
+  <ng-container *ngIf="oAuthTokenState === OAuthTokenState.VALID && emulatorState === EmulatorState.PATCHED; else invalidState">
+    <ng-container *ngIf="twitchSocketState === TwitchSocketState.NOT_CONNECTED">
+      <div class="d-flex flex-column align-items-center justify-content-center">
+        <span>Ready to open the websocket.</span>
+        <br>
+        <button mat-raised-button color="accent" (click)="openTwitchSocket()">Open Websocket</button>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="twitchSocketState === TwitchSocketState.CONNECTED">
+      <div class="d-flex flex-column align-items-center justify-content-center">
+        <span>Websocket is open.</span>
+        <br>
+        <span>If it is not working, go to file select and patch the emulator again.</span>
+      </div>
+    </ng-container>
+
+  </ng-container>
+
+  <ng-template #invalidState>
+    <div *ngIf="oAuthTokenState !== OAuthTokenState.VALID">
+      <span color="warn">You must have a valid OAuth token to continue.</span>
+    </div>
+
+    <div *ngIf="emulatorState !== EmulatorState.PATCHED">
+      <span color="warn">You must have already patched your emulator to continue.</span>
+    </div>
+  </ng-template>
+
+</div>

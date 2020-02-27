@@ -48,6 +48,16 @@ export function getEmulator(): Emulator | undefined {
   return emulator;
 }
 
+// set socket reference
+import * as WebSocket from 'ws';
+let twitchSocket: WebSocket | undefined;
+export function setTwitchSocket(value: WebSocket | undefined) {
+  twitchSocket = value;
+}
+export function getTwitchSocket(): WebSocket | undefined {
+  return twitchSocket;
+}
+
 // spawn client
 import * as download from 'download-chromium';
 import * as os from 'os';

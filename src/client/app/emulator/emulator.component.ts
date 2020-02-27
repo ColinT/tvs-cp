@@ -56,7 +56,6 @@ export class EmulatorComponent {
       .get('http://localhost:3000/api/emulator/status', { responseType: 'text' })
       .toPromise()
       .then((response) => {
-        console.log(response);
         this.emulatorState = response as EmulatorState;
       })
       .catch((error) => {
