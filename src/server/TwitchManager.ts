@@ -1,5 +1,6 @@
 import { default as axios } from 'axios';
 import * as WebSocket from 'ws';
+import * as levenshtein from 'fast-levenshtein';
 
 import { Emulator } from './Emulator';
 import { OAuthManager } from './OAuthManager';
@@ -9,6 +10,21 @@ import { ChannelPointsWebSocket } from './ChannelPointsWebSocket';
  * This class handles all non-auth related Twitch API requests.
  */
 export class TwitchManager {
+  private static characterDict = {
+    mario: 0,
+    luigi: 1,
+    yoshi: 2,
+    wario: 3,
+    peach: 4,
+    toad: 5,
+    waluigi: 6,
+    rosalina: 7,
+    sonic: 8,
+    knuckles: 9,
+    // goomba: 10,
+    kirby: 11,
+  };
+
   public static async getChannelId(oAuthManager: OAuthManager): Promise<string> {
     const token = oAuthManager.getToken();
     return axios
@@ -35,12 +51,43 @@ export class TwitchManager {
   }
 
   private static handleRedemption(redemptionData, emulator: Emulator) {
-    // TODO document redeptionData format
-    const command: string = redemptionData.data.redemption.reward.title;
+    const command: string = redemptionData.data.redemption.reward.title.toLowerCase();
     const userInput: string = redemptionData.data.redemption.user_input;
     console.log('Executing command: ' + command);
     if (command.charAt(0) === '!') {
-      emulator.doEffect(`${command}${!!userInput ? ` ${userInput}` : ''}`);
+      switch (command) {
+        case '!changecharacter': {
+          const id = this.getCharacterIdFromName(userInput);
+          console.log('Changing to character id:', id);
+          emulator.changeCharacter(id);
+        }
+        default: {
+          emulator.doEffect(`${command}${!!userInput ? ` ${userInput}` : ''}`);
+        }
+      }
     }
+  }
+
+  private static getCharacterIdFromName(query: string): number {
+    // Return the closest character id based on levenshtein distance
+    const characterEntries = Object.entries(this.characterDict);
+    // Set initial condition
+    let distance = levenshtein.get(characterEntries[0][0], query);
+    let id = characterEntries[0][1];
+    if (distance === 0) {
+      return id;
+    }
+    // Loop through all names for minimum distance
+    for (let i = 1; i < characterEntries.length; i++) {
+      const newDistance = levenshtein.get(characterEntries[i][0], query);
+      if (newDistance === 0) {
+        return characterEntries[i][1];
+      }
+      if (newDistance < distance) {
+        distance = newDistance;
+        id = characterEntries[i][1];
+      }
+    }
+    return id;
   }
 }

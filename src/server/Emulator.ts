@@ -86,7 +86,35 @@ export class Emulator {
     if (this.baseAddress === -1) {
       throw new Error('Could not find base address');
     }
+
+    this.changeCharacter(0);
+    this.reset();
+
     this.state = EmulatorState.CONNECTED;
+  }
+
+  public reset(): void {
+    this.setGameMode(1);
+    this.setConnectionFlag(2);
+    const buffer = Buffer.alloc(0x1c);
+    for (let i = 0; i < 24; i++) {
+      this.writeMemory(0xff7800 + 0x100 * i, buffer);
+    }
+  }
+
+  public setConnectionFlag(connectionFlag): void {
+    const tokenBuffer = Buffer.allocUnsafe(1);
+    tokenBuffer.writeUInt8(connectionFlag, 0);
+    this.writeMemory(0xff5ffc, tokenBuffer);
+  }
+
+  public setGameMode(gameMode: number): void {
+    const gameModeBuffer = Buffer.from(new Uint8Array([ gameMode ]).buffer as ArrayBuffer);
+    const emptyBuffer = Buffer.alloc(0xc);
+    emptyBuffer.writeUInt8(gameMode, 6);
+    this.writeMemory(0xff5ff7, gameModeBuffer);
+    this.writeMemory(0xff7710, emptyBuffer);
+    this.writeMemory(0xff7810, emptyBuffer);
   }
 
   /**
@@ -115,6 +143,28 @@ export class Emulator {
     for (const patchBuffer of patchBuffers) {
       this.writeMemory(patchBuffer.patchId, patchBuffer.data.swap32());
     }
+
+    const net64BasePath = './net64-patches';
+    const net64Patches = fs.readdirSync(net64BasePath);
+    const net64PatchBuffersPromise: Promise<{ patchId: number; data: Buffer }>[] = [];
+    for (const net64Patch of net64Patches) {
+      net64PatchBuffersPromise.push(
+        new Promise((resolve, reject) => {
+          fs.readFile(path.join(net64BasePath, net64Patch), (err, data) => {
+            if (err) reject(err);
+            resolve({
+              patchId: parseInt(net64Patch, 16),
+              data,
+            });
+          });
+        })
+      );
+    }
+    const net64PatchBuffers = await Promise.all(net64PatchBuffersPromise);
+    for (const net64PatchBuffer of net64PatchBuffers) {
+      this.writeMemory(net64PatchBuffer.patchId, net64PatchBuffer.data);
+    }
+
     this.state = EmulatorState.PATCHED;
   }
 
@@ -170,5 +220,16 @@ export class Emulator {
       // TODO
       console.error(err);
     }
+  }
+
+  /**
+   * Writes new character ID into memory.
+   *
+   * @param {number} characterId - Character ID to write to
+   */
+  public changeCharacter(characterId: number): void {
+    const b = Buffer.allocUnsafe(1);
+    b.writeUInt8(characterId + 1, 0);
+    this.writeMemory(0xff5ff3, b);
   }
 }
