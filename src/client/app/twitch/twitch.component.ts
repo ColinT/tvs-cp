@@ -1,18 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
+import { EmulatorState } from 'common/states/EmulatorState';
+
 enum OAuthTokenState {
   LOADING = 1,
   VALID,
   INVALID,
-}
-
-enum EmulatorState {
-  NOT_CONNECTED = 'NOT_CONNECTED',
-  CONNECTING = 'CONNECTING',
-  CONNECTED = 'CONNECTED',
-  PATCHING = 'PATCHING',
-  PATCHED = 'PATCHED',
 }
 
 enum TwitchSocketState {

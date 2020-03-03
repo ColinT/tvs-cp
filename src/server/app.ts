@@ -21,7 +21,7 @@ const port = 3000;
 server.listen(port, () => console.log(`Listening on port ${port}`));
 
 // Direct all api calls to the api
-import api from './api/api';
+import api from 'server/api/api';
 app.use('/api', api);
 
 // Direct all non-api calls to the SPA
@@ -29,17 +29,17 @@ app.use('/', express.static(path.join(__dirname, '../client'))); // Express will
 app.use('/', (_req, res) => res.sendFile(path.join(__dirname, '../client/index.html'))); // SPA router handles all other paths
 
 // setup settings manager
-import { SettingsManager } from './SettingsManager';
+import { SettingsManager } from 'server/SettingsManager';
 export const settingsManager = new SettingsManager(path.join(cwd, './settings.json'));
 
 // setup oauth manager
-import { OAuthManager } from './OAuthManager';
+import { OAuthManager } from 'server/OAuthManager';
 export const oAuthManager = new OAuthManager(
   settingsManager.get('oauth/tokenSaveStatus') ? settingsManager.get('oAuthTokenPath') : undefined
 );
 
 // set emulator reference
-import { Emulator } from './Emulator';
+import { Emulator } from 'server/Emulator';
 let emulator: Emulator | undefined;
 export function setEmulator(value: Emulator | undefined) {
   emulator = value;

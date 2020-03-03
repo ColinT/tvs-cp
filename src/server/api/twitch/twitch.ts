@@ -1,9 +1,10 @@
 import * as express from 'express';
 const router = express.Router();
 
-import { TwitchManager } from '../../TwitchManager';
-import { oAuthManager, getEmulator, getTwitchSocket, setTwitchSocket } from '../../app';
-import { EmulatorState } from '../../Emulator';
+import { EmulatorState } from 'common/states/EmulatorState';
+
+import { TwitchManager } from 'server/TwitchManager';
+import { oAuthManager, getEmulator, getTwitchSocket, setTwitchSocket } from 'server/app';
 
 router.post('/open-socket', async (_req, res) => {
   try {

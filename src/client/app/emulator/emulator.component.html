@@ -18,7 +18,7 @@
   </ng-container>
 
   <ng-container *ngIf="emulatorListState === EmulatorListState.LOADED">
-    <ng-container *ngIf="emulatorList.length > 0; else">
+    <ng-container *ngIf="emulatorList.length > 0; else noEmulators">
       <mat-card>
 
         <mat-card-title class="d-flex align-items-center justify-content-between">
@@ -44,6 +44,19 @@
 
       </mat-card>
     </ng-container>
+
+    <ng-template #noEmulators>
+      <div class="d-flex align-items-center justify-content-center flex-column">
+        <div>No emulators detected.</div>
+        <br>
+        <button mat-raised-button color="accent" (click)="getEmulatorList()">
+          <span>Rescan</span>&nbsp;
+          <mat-icon>refresh</mat-icon>
+        </button>
+        <br>
+        <div><b>Only Project 64 is supported.</b></div>
+      </div>
+    </ng-template>
   </ng-container>
   <!-- #endregion -->
 

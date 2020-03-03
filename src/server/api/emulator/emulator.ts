@@ -1,8 +1,10 @@
 import * as express from 'express';
 const router = express.Router();
 
-import { Emulator, EmulatorState } from '../../Emulator';
-import { setEmulator, getEmulator } from '../../app';
+import { EmulatorState } from 'common/states/EmulatorState';
+
+import { Emulator } from 'server/Emulator';
+import { setEmulator, getEmulator } from 'server/app';
 
 router.get('/list', (_req, res) => {
   try {

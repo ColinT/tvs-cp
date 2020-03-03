@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { cwd } from './app';
+import { cwd } from 'server/app';
 
 /**
  * Manages the settings file for user settings.

@@ -1,5 +1,5 @@
 import * as WebSocket from 'ws';
-import { OAuthManager } from './OAuthManager';
+import { OAuthManager } from 'server/OAuthManager';
 
 export class ChannelPointsWebSocket {
   public static generateWebSocket(

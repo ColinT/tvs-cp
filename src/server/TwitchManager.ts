@@ -2,9 +2,9 @@ import { default as axios } from 'axios';
 import * as WebSocket from 'ws';
 import * as levenshtein from 'fast-levenshtein';
 
-import { Emulator } from './Emulator';
-import { OAuthManager } from './OAuthManager';
-import { ChannelPointsWebSocket } from './ChannelPointsWebSocket';
+import { Emulator } from 'server/Emulator';
+import { OAuthManager } from 'server/OAuthManager';
+import { ChannelPointsWebSocket } from 'server/ChannelPointsWebSocket';
 
 /**
  * This class handles all non-auth related Twitch API requests.

@@ -1,19 +1,12 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Process } from 'types/Process';
+import { Process } from 'common/types/Process';
+import { EmulatorState } from 'common/states/EmulatorState';
 
 enum EmulatorListState {
   LOADING = 1,
   LOADED,
-}
-
-enum EmulatorState {
-  NOT_CONNECTED = 'NOT_CONNECTED',
-  CONNECTING = 'CONNECTING',
-  CONNECTED = 'CONNECTED',
-  PATCHING = 'PATCHING',
-  PATCHED = 'PATCHED',
 }
 
 @Component({
