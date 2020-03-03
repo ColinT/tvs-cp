@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
+import { baseUrl } from 'client/config';
+
 enum OAuthTokenState {
   LOADING = 1,
   VALID,
@@ -41,7 +43,7 @@ export class OAuthComponent implements OnInit {
 
   async checkTokenValidity() {
     return this.http
-      .get<boolean>('http://localhost:3000/api/oauth/token-validity?scope=channel:read:redemptions')
+      .get<boolean>(`${baseUrl}/api/oauth/token-validity?scope=channel:read:redemptions`)
       .toPromise()
       .then((result) => {
         this.state = result ? OAuthTokenState.VALID : OAuthTokenState.INVALID;
@@ -55,7 +57,7 @@ export class OAuthComponent implements OnInit {
 
   async checkTokenSaveStatus() {
     return this.http
-      .get<boolean>('http://localhost:3000/api/oauth/token-save-status')
+      .get<boolean>(`${baseUrl}/api/oauth/token-save-status`)
       .toPromise()
       .then((tokenIsSaved) => {
         this.tokenSaveState = tokenIsSaved ? TokenSaveState.SAVED : TokenSaveState.NOT_SAVED;
@@ -71,7 +73,7 @@ export class OAuthComponent implements OnInit {
       return;
     } else {
       try {
-        await this.http.post('http://localhost:3000/api/oauth/token', form.value.token).toPromise();
+        await this.http.post(`${baseUrl}/api/oauth/token`, form.value.token).toPromise();
         await this.checkTokenValidity();
       } catch (error) {
         console.error(error);
@@ -84,9 +86,9 @@ export class OAuthComponent implements OnInit {
     this.tokenSaveState = TokenSaveState.LOADING;
     try {
       if (previousTokenSaveState === TokenSaveState.SAVED) {
-        await this.http.post('http://localhost:3000/api/oauth/token-save-status', 'false').toPromise();
+        await this.http.post(`${baseUrl}/api/oauth/token-save-status`, 'false').toPromise();
       } else if (previousTokenSaveState === TokenSaveState.NOT_SAVED) {
-        await this.http.post('http://localhost:3000/api/oauth/token-save-status', 'true').toPromise();
+        await this.http.post(`${baseUrl}/api/oauth/token-save-status`, 'true').toPromise();
       }
       await this.checkTokenSaveStatus();
     } catch (error) {

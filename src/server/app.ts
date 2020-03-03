@@ -16,9 +16,13 @@ import * as cors from 'cors';
 app.use(cors());
 
 import * as http from 'http';
+import { AddressInfo } from 'net';
 const server = new http.Server(app);
-const port = 3000;
-server.listen(port, () => console.log(`Listening on port ${port}`));
+server.listen(0, () => {
+  const { port } = server.address() as AddressInfo;
+  console.log(`Listening on port ${port}`);
+  spawnClient(port);
+});
 
 // Direct all api calls to the api
 import api from 'server/api/api';
@@ -62,18 +66,20 @@ export function getTwitchSocket(): WebSocket | undefined {
 import * as chromium from 'chromium';
 import { execFile } from 'child_process';
 
-const clientProcess = execFile(chromium.path, [ '--app=http://localhost:3000' ], (error) => {
-  if (!!error) {
-    console.error(error);
-    process.exit(1);
-  } else {
-    process.exit(0);
-  }
-});
+function spawnClient(port: string | number) {
+  const clientProcess = execFile(chromium.path, [ `--app=http://localhost:${port}` ], (error) => {
+    if (!!error) {
+      console.error(error);
+      process.exit(1);
+    } else {
+      process.exit(0);
+    }
+  });
 
-clientProcess.on('close', () => {
-  process.exit(0);
-});
+  clientProcess.on('close', () => {
+    process.exit(0);
+  });
+}
 
 // import { Main } from './Main';
 // const main = new Main();
