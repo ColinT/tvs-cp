@@ -59,33 +59,21 @@ export function getTwitchSocket(): WebSocket | undefined {
 }
 
 // spawn client
-const chromium = require('chromium');
-import * as os from 'os';
+import * as chromium from 'chromium';
 import { execFile } from 'child_process';
 
-const tmp = os.tmpdir();
-console.log(tmp);
-// download({
-//   revision: 694644,
-//   installPath: `${tmp}/.local-chromium`,
-// })
-//   .then((path) => {
-    const clientProcess = execFile(chromium.path, [ '--app=http://localhost:3000' ], (error) => {
-      if (!!error) {
-        console.error(error);
-        process.exit(1);
-      } else {
-        process.exit(0);
-      }
-    });
+const clientProcess = execFile(chromium.path, [ '--app=http://localhost:3000' ], (error) => {
+  if (!!error) {
+    console.error(error);
+    process.exit(1);
+  } else {
+    process.exit(0);
+  }
+});
 
-    clientProcess.on('close', () => {
-      process.exit(0);
-    });
-  // })
-  // .catch((error) => {
-  //   console.error(error);
-  // });
+clientProcess.on('close', () => {
+  process.exit(0);
+});
 
 // import { Main } from './Main';
 // const main = new Main();
