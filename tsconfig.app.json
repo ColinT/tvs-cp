@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.client.json",
+  "compilerOptions": {
+    "outDir": "./client/app",
+    "types": [ "node" ]
+  },
+  "files": [
+    "src/client/main.ts",
+    "src/client/polyfills.ts"
+  ],
+  "include": [
+    "src/client/**/*.d.ts"
+  ]
+}

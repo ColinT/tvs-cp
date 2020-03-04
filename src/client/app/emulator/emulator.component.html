@@ -1,0 +1,104 @@
+<div class="container">
+  <h1 class="display-4">
+    Connect Emulator
+  </h1>
+  <div>
+    <p>
+      Select an emulator process to connect to. The only supported emulator is Project 64.
+      To enable Net64 features, you must use the Memory Modded version of Project 64.
+    </p>
+  </div>
+
+  <!-- #region emulator list state -->
+  <ng-container *ngIf="emulatorListState === EmulatorListState.LOADING">
+    <div class="d-flex align-items-center justify-content-center">
+      <mat-progress-spinner mode="indeterminate" color="accent" diameter="20"></mat-progress-spinner>
+      <span>&nbsp;Scanning emulators</span>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="emulatorListState === EmulatorListState.LOADED">
+    <ng-container *ngIf="emulatorList.length > 0; else noEmulators">
+      <mat-card>
+
+        <mat-card-title class="d-flex align-items-center justify-content-between">
+          <span>Available Emulators</span>
+          <button mat-raised-button color="accent" (click)="getEmulatorList()">
+            <span>Rescan</span>&nbsp;
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </mat-card-title>
+
+        <mat-card-content>
+          <mat-action-list>
+
+            <button mat-raised-button *ngFor="let emulator of emulatorList; let i = index" 
+              class="w-100 d-flex justify-content-start rounded-0"
+              (click)="setEmulator(emulator)"
+            >
+              {{i + 1}}. {{ emulator.szExeFile }} | {{ emulator.th32ProcessID }}
+            </button>
+
+          </mat-action-list>
+        </mat-card-content>
+
+      </mat-card>
+    </ng-container>
+
+    <ng-template #noEmulators>
+      <div class="d-flex align-items-center justify-content-center flex-column">
+        <div>No emulators detected.</div>
+        <br>
+        <button mat-raised-button color="accent" (click)="getEmulatorList()">
+          <span>Rescan</span>&nbsp;
+          <mat-icon>refresh</mat-icon>
+        </button>
+        <br>
+        <div><b>Only Project 64 is supported.</b></div>
+      </div>
+    </ng-template>
+  </ng-container>
+  <!-- #endregion -->
+
+  <div class="py-1"></div>
+
+  <!-- #region -->
+  <ng-container *ngIf="emulatorState === EmulatorState.CONNECTING">
+    <div class="d-flex align-items-center justify-content-center">
+      <mat-progress-spinner mode="indeterminate" color="accent" diameter="20"></mat-progress-spinner>
+      <span>&nbsp;Connecting to the emulator</span>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="emulatorState === EmulatorState.CONNECTED">
+    <div class="d-flex flex-column align-items-center justify-content-center">
+      <span>Emulator connected</span>
+      <br>
+      <span><b>You must patch memory on the file select screen.</b></span>
+      <br>
+      <button mat-raised-button color="accent" (click)="patchEmulator()">Patch Memory</button>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="emulatorState === EmulatorState.PATCHING">
+    <div class="d-flex align-items-center justify-content-center">
+      <mat-progress-spinner mode="indeterminate" color="accent" diameter="20"></mat-progress-spinner>
+      <span>&nbsp;Patching memory</span>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="emulatorState === EmulatorState.PATCHED">
+    <div class="d-flex flex-column align-items-center justify-content-center">
+      <span>Memory patched successfully.</span>
+      <br>
+      <span>If the patch is not working, return to file select and patch again.</span>
+      <br>
+      <button mat-raised-button color="warn" (click)="patchEmulator()">Patch Memory</button>
+      <br>
+      <span>To receive commands you must open the Twitch websocket.</span>
+      <br>
+      <a mat-raised-button color="accent" routerLink="/twitch">Connect to Twitch Page</a>
+    </div>
+  </ng-container>
+  <!-- #endregion -->
+</div>
