@@ -1,0 +1,79 @@
+<div class="container">
+  <h1 class="display-4">
+    OAuth Token
+  </h1>
+  <div>
+    <p>A Twitch OAuth token is required to read channel point reward redmptions.</p>
+  </div>
+
+  <ng-container *ngIf="state === OAuthTokenState.LOADING">
+    <div class="d-flex align-items-center justify-content-center">
+      <mat-progress-spinner mode="indeterminate" color="accent" diameter="20"></mat-progress-spinner>
+      <span>&nbsp;Checking token validity</span>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="state === OAuthTokenState.INVALID">
+    <p>You have not entered a token, or it is invalid. Please enter a valid token below.</p>
+    <form [formGroup]="oAuthTokenForm" (ngSubmit)="submitOAuthToken(oAuthTokenForm); $event.preventDefault()">
+
+      <div class="d-flex align-items-baseline">
+        <mat-form-field class="flex-fill" color="accent">
+          <input #oauthInput matInput formControlName="token" placeholder="OAuth Token" type="password" required>
+          <mat-error>Required</mat-error>
+        </mat-form-field>
+        <button type="button" mat-icon-button (click)="oauthInput.type = oauthInput.type === 'password' ? 'text' : 'password'">
+          <mat-icon [color]="oauthInput.type === 'password' ? 'none' : 'warn'">
+            {{oauthInput.type === 'password' ? 'visibility' : 'visibility_off'}}
+          </mat-icon>
+        </button>
+      </div>
+      <br>
+      <button mat-raised-button color="accent" [disabled]="oAuthTokenForm.invalid">
+        Submit
+      </button>
+    </form>
+    <br>
+    <p>If you do not have a token, you can generate one with the Twitch Chat OAuth Token Generator.</p>
+    <a mat-raised-button color="accent" [href]="newTokenUrl" target="_blank" rel="noopener noreferrer">
+      <span>Twitch Chat OAuth Token Generator</span>
+      &nbsp;<mat-icon>launch</mat-icon>
+    </a>
+  </ng-container>
+
+  <ng-container *ngIf="state === OAuthTokenState.VALID">
+
+    <div class="d-flex align-items-center">
+      <span>Your token is valid</span>&nbsp;<mat-icon color="accent">check_circle</mat-icon>
+    </div>
+
+    <div class="py-1"></div>
+
+    <ng-container *ngIf="tokenSaveState === TokenSaveState.LOADING">
+      <div class="d-flex align-items-center justify-content-center">
+        <mat-progress-spinner mode="indeterminate" color="accent" diameter="20"></mat-progress-spinner>
+        <span>&nbsp;Checking token save status</span>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="tokenSaveState === TokenSaveState.NOT_SAVED">
+      <div>Your token is not saved</div>
+
+      <div class="py-1"></div>
+
+      <button mat-raised-button color="accent" (click)="toggleTokenSaveStatus()">Save Token</button>
+    </ng-container>
+
+    <ng-container *ngIf="tokenSaveState === TokenSaveState.SAVED">
+      <div>Your token is saved</div>
+
+      <div class="py-1"></div>
+
+      <button mat-raised-button color="accent" (click)="toggleTokenSaveStatus()">Delete Token</button>
+    </ng-container>
+
+  </ng-container>
+<!-- 
+  <mat-checkbox [checked]="tokenSaveStatus">Save OAuth Token</mat-checkbox>
+  <span>If your token expires or is invalidated you still need to retrive a new one.</span> -->
+</div>

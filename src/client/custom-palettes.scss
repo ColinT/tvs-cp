@@ -1,0 +1,101 @@
+@use '~@angular/material/core/theming/_palette' as mat-palette;
+
+$tvs-purple: (
+  50: #fbe9fa,
+  100: #f4bef0,
+  200: #ec93e6,
+  300: #e467dc,
+  400: #dd3cd2,
+  500: #c322b8,
+  600: #981b8f,
+  700: #6c1366,
+  800: #410b3d,
+  900: #160414,
+  A100: #f4beef,
+  A200: #e87ddf,
+  A400: #e052d5,
+  A700: #c322b6,
+  contrast:
+    (
+      50: mat-palette.$dark-primary-text,
+      100: mat-palette.$dark-primary-text,
+      200: mat-palette.$dark-primary-text,
+      300: mat-palette.$light-primary-text,
+      400: mat-palette.$light-primary-text,
+      500: mat-palette.$light-primary-text,
+      600: mat-palette.$light-primary-text,
+      700: mat-palette.$light-primary-text,
+      800: mat-palette.$light-primary-text,
+      900: mat-palette.$light-primary-text,
+      A100: mat-palette.$dark-primary-text,
+      A200: mat-palette.$light-primary-text,
+      A400: mat-palette.$light-primary-text,
+      A700: mat-palette.$light-primary-text
+    )
+);
+$tvs-blue: (
+  50: #e6e6ff,
+  100: #b5b3ff,
+  200: #8480ff,
+  300: #524dff,
+  400: #211aff,
+  500: #0800e6,
+  600: #0600b3,
+  700: #040080,
+  800: #03004d,
+  900: #01001a,
+  A100: #cce3ff,
+  A200: #80b9ff,
+  A400: #338fff,
+  A700: #0067e6,
+  contrast:
+    (
+      50: mat-palette.$dark-primary-text,
+      100: mat-palette.$dark-primary-text,
+      200: mat-palette.$light-primary-text,
+      300: mat-palette.$light-primary-text,
+      400: mat-palette.$light-primary-text,
+      500: mat-palette.$light-primary-text,
+      600: mat-palette.$light-primary-text,
+      700: mat-palette.$light-primary-text,
+      800: mat-palette.$light-primary-text,
+      900: mat-palette.$light-primary-text,
+      A100: mat-palette.$dark-primary-text,
+      A200: mat-palette.$light-primary-text,
+      A400: mat-palette.$light-primary-text,
+      A700: mat-palette.$light-primary-text
+    )
+);
+$tvs-pink: (
+  50: #ffe6e8,
+  100: #ffb3bb,
+  200: #ff808e,
+  300: #ff6678,
+  400: #ff4d61,
+  500: #ff1a34,
+  600: #e6001b,
+  700: #b30015,
+  800: #80000f,
+  900: #4d0009,
+  A100: #ffcccc,
+  A200: #ff8080,
+  A400: #ff3333,
+  A700: #e60000,
+  contrast:
+    (
+      50: mat-palette.$dark-primary-text,
+      100: mat-palette.$dark-primary-text,
+      200: mat-palette.$dark-primary-text,
+      300: mat-palette.$light-primary-text,
+      400: mat-palette.$light-primary-text,
+      500: mat-palette.$light-primary-text,
+      600: mat-palette.$light-primary-text,
+      700: mat-palette.$light-primary-text,
+      800: mat-palette.$light-primary-text,
+      900: mat-palette.$light-primary-text,
+      A100: mat-palette.$dark-primary-text,
+      A200: mat-palette.$light-primary-text,
+      A400: mat-palette.$light-primary-text,
+      A700: mat-palette.$light-primary-text
+    )
+);
