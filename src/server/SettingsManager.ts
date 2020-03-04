@@ -103,6 +103,9 @@ export class SettingsManager {
         currentNode[segment] = JSON.parse(JSON.stringify(data));
       }
     }
+
+    // Save the settings file
+    this.writeFileSync();
   }
 
   private recursiveMerge(source: Object, target: Object): Object {
