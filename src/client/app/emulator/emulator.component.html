@@ -93,7 +93,11 @@
       <br>
       <span>If the patch is not working, return to file select and patch again.</span>
       <br>
-      <button mat-raised-button color="accent" (click)="patchEmulator()">Patch Memory</button>
+      <button mat-raised-button color="warn" (click)="patchEmulator()">Patch Memory</button>
+      <br>
+      <span>To receive commands you must open the Twitch websocket.</span>
+      <br>
+      <a mat-raised-button color="accent" routerLink="/twitch">Connect to Twitch Page</a>
     </div>
   </ng-container>
   <!-- #endregion -->
