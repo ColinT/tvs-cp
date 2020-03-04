@@ -1,21 +1,14 @@
-export interface ProcessReadWrite {
-  readMemory: (offset: number, length: number) => Buffer | number;
-  writeMemory: (offset: number, buffer: Buffer) => void;
-}
-
 import * as memoryjs from 'memoryjs';
 
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { Process } from 'types/Process';
+import { Process } from 'common/types/Process';
+import { EmulatorState } from 'common/states/EmulatorState';
 
-export enum EmulatorState {
-  NOT_CONNECTED = 'NOT_CONNECTED',
-  CONNECTING = 'CONNECTING',
-  CONNECTED = 'CONNECTED',
-  PATCHING = 'PATCHING',
-  PATCHED = 'PATCHED',
+export interface ProcessReadWrite {
+  readMemory: (offset: number, length: number) => Buffer | number;
+  writeMemory: (offset: number, buffer: Buffer) => void;
 }
 
 /**

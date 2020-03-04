@@ -1,8 +1,8 @@
 import * as express from 'express';
 const router = express.Router();
 
-import { oAuthManager, settingsManager } from '../../app';
-import { coerceBoolean } from '../../utils';
+import { oAuthManager, settingsManager } from 'server/app';
+import { coerceBoolean } from 'server/utils';
 
 router.put('/token', (_req, _res, next) => next());
 router.post('/token', (req, res) => {

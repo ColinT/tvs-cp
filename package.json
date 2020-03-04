@@ -6,7 +6,7 @@
   "bin": "./dist/server/app.js",
   "scripts": {
     "start": "node ./dist/server/app.js",
-    "build": "rimraf ./dist/* && (ng build & tsc --p ./tsconfig.server.json) & png-to-ico ./tvs-cp.png > ./dist/client/tvs-cp.ico",
+    "build": "rimraf ./dist/* && (ng build & ttsc --p ./tsconfig.server.json) & png-to-ico ./tvs-cp.png > ./dist/client/tvs-cp.ico",
     "package": "rimraf ./release/* && pkg . --out-path ./release && create-nodew-exe ./release/tvs-cp.exe ./release/tvs-cp-headless.exe",
     "postinstall": "npm explore memoryjs -- npm run build64",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -30,9 +30,9 @@
     "@types/express": "^4.17.2",
     "axios": "^0.19.2",
     "bootstrap": "^4.4.1",
+    "chromium": "^2.1.1",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
-    "download-chromium": "^2.2.0",
     "express": "^4.17.1",
     "fast-levenshtein": "^2.0.6",
     "memoryjs": "^3.2.3",
@@ -60,7 +60,9 @@
     "rimraf": "^3.0.2",
     "ts-node": "~8.3.0",
     "tslint": "^6.0.0",
-    "typescript": "~3.7.5"
+    "ttypescript": "^1.5.10",
+    "typescript": "~3.7.5",
+    "typescript-transform-paths": "^1.1.14"
   },
   "pkg": {
     "assets": [

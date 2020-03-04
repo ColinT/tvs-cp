@@ -1,19 +1,14 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Process } from 'types/Process';
+import { Process } from 'common/types/Process';
+import { EmulatorState } from 'common/states/EmulatorState';
+
+import { baseUrl } from 'client/config';
 
 enum EmulatorListState {
   LOADING = 1,
   LOADED,
-}
-
-enum EmulatorState {
-  NOT_CONNECTED = 'NOT_CONNECTED',
-  CONNECTING = 'CONNECTING',
-  CONNECTED = 'CONNECTED',
-  PATCHING = 'PATCHING',
-  PATCHED = 'PATCHED',
 }
 
 @Component({
@@ -40,7 +35,7 @@ export class EmulatorComponent {
   async getEmulatorList(): Promise<void> {
     this.emulatorListState = EmulatorListState.LOADING;
     return this.http
-      .get<Process[]>('http://localhost:3000/api/emulator/list')
+      .get<Process[]>(`${baseUrl}/api/emulator/list`)
       .toPromise()
       .then((value) => {
         this.emulatorListState = EmulatorListState.LOADED;
@@ -53,7 +48,7 @@ export class EmulatorComponent {
 
   async getEmulatorStatus(): Promise<void> {
     return this.http
-      .get('http://localhost:3000/api/emulator/status', { responseType: 'text' })
+      .get(`${baseUrl}/api/emulator/status`, { responseType: 'text' })
       .toPromise()
       .then((response) => {
         this.emulatorState = response as EmulatorState;
@@ -66,7 +61,7 @@ export class EmulatorComponent {
   async setEmulator(process: Process): Promise<void> {
     this.emulatorState = EmulatorState.CONNECTING;
     return this.http
-      .post<{ baseAddress: number }>('http://localhost:3000/api/emulator/process-id', process.th32ProcessID, {
+      .post<{ baseAddress: number }>(`${baseUrl}/api/emulator/process-id`, process.th32ProcessID, {
         headers: {
           'Content-Type': 'text/plain',
         },
@@ -85,7 +80,7 @@ export class EmulatorComponent {
   async patchEmulator(): Promise<void> {
     this.emulatorState = EmulatorState.PATCHING;
     return this.http
-      .post('http://localhost:3000/api/emulator/patch', {})
+      .post(`${baseUrl}/api/emulator/patch`, {})
       .toPromise()
       .then((response) => {
         this.emulatorState = EmulatorState.PATCHED;

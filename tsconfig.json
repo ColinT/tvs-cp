@@ -5,10 +5,15 @@
     "strictNullChecks": true,
     "baseUrl": ".",
     "paths": {
-      "types/*": ["./types/*"]
+      "common/*": ["./src/common/*"],
+      "client/*": ["./src/client/*"],
+      "server/*": ["./src/server/*"]
     },
     "typeRoots": [
-      "node_modules/@types", "./types"
+      "node_modules/@types"
+    ],
+    "plugins": [
+      { "transform": "typescript-transform-paths" }
     ]
   },
   "include": [
