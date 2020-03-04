@@ -69,7 +69,11 @@
     "typescript-transform-paths": "^1.1.14"
   },
   "pkg": {
-    "assets": [ "./dist/client/**/*" ],
-    "targets": [ "node10-win-x64" ]
+    "assets": [
+      "./dist/client/**/*"
+    ],
+    "targets": [
+      "node10-win-x64"
+    ]
   }
 }
