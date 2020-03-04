@@ -34,9 +34,9 @@
     "@types/express": "^4.17.2",
     "axios": "^0.19.2",
     "bootstrap": "^4.4.1",
-    "chromium": "^2.1.1",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "download-chromium": "^2.2.0",
     "express": "^4.17.1",
     "fast-levenshtein": "^2.0.6",
     "memoryjs": "^3.2.3",
@@ -70,7 +70,7 @@
   },
   "pkg": {
     "assets": [
-      "./dist/client/**/*"
+      "./dist/**/*"
     ],
     "targets": [
       "node10-win-x64"
