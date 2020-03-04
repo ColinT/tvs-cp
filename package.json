@@ -11,8 +11,12 @@
     "postinstall": "npm explore memoryjs -- npm run build64",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Colin Tong (https://github.com/ColinT)",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ColinT/tvs-cp"
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~9.0.1",
@@ -65,11 +69,7 @@
     "typescript-transform-paths": "^1.1.14"
   },
   "pkg": {
-    "assets": [
-      "./dist/client/**/*"
-    ],
-    "targets": [
-      "node10-win-x64"
-    ]
+    "assets": [ "./dist/client/**/*" ],
+    "targets": [ "node10-win-x64" ]
   }
 }
