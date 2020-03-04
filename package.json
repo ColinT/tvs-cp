@@ -6,7 +6,7 @@
   "bin": "./dist/server/app.js",
   "scripts": {
     "start": "node ./dist/server/app.js",
-    "build": "rimraf ./dist/* && (ng build & ttsc --p ./tsconfig.server.json) & png-to-ico ./tvs-cp.png > ./dist/client/tvs-cp.ico",
+    "build": "rimraf ./dist/* && ng build && ttsc --p ./tsconfig.server.json && png-to-ico ./tvs-cp.png > ./dist/client/tvs-cp.ico",
     "package": "rimraf ./release/* && pkg . --out-path ./release && create-nodew-exe ./release/tvs-cp.exe ./release/tvs-cp-headless.exe",
     "postinstall": "npm explore memoryjs -- npm run build64",
     "test": "echo \"Error: no test specified\" && exit 1"
