@@ -6,7 +6,7 @@ import { EmulatorState } from 'common/states/EmulatorState';
 import { Emulator } from 'server/Emulator';
 import { setEmulator, getEmulator } from 'server/app';
 
-router.get('/list', (_req, res) => {
+router.get('/list', async (_req, res) => {
   try {
     const emulatorList = Emulator.getAllProcesses(/project64/i);
     res.status(200).send(emulatorList);
@@ -16,7 +16,7 @@ router.get('/list', (_req, res) => {
   }
 });
 
-router.post('/process-id', (req, res) => {
+router.post('/process-id', async (req, res) => {
   try {
     const emulator = new Emulator(parseInt(req.body, 10));
     setEmulator(emulator);
@@ -29,7 +29,7 @@ router.post('/process-id', (req, res) => {
   }
 });
 
-router.post('/patch', async (req, res) => {
+router.post('/patch', async (_req, res) => {
   // TODO accept list of patches to apply
   // For now apply all available patches
   try {
@@ -51,7 +51,7 @@ router.post('/patch', async (req, res) => {
   }
 });
 
-router.get('/status', (_req, res) => {
+router.get('/status', async (_req, res) => {
   try {
     const emulator = getEmulator();
     if (!emulator) {

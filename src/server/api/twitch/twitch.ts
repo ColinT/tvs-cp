@@ -25,7 +25,7 @@ router.post('/open-socket', async (_req, res) => {
   }
 });
 
-router.get('/socket-status', (_req, res) => {
+router.get('/socket-status', async (_req, res) => {
   try {
     const socket = getTwitchSocket();
     if (!socket) {
