@@ -6,8 +6,8 @@
   "bin": "./dist/server/app.js",
   "scripts": {
     "start": "node ./dist/server/app.js",
-    "build": "npx rimraf ./dist/* && (ng build & tsc --p ./tsconfig.server.json)",
-    "package": "npx rimraf ./release/* && npx pkg . --out-path ./release && create-nodew-exe ./release/tvs-cp.exe ./release/tvs-cp-headless.exe",
+    "build": "rimraf ./dist/* && (ng build & tsc --p ./tsconfig.server.json) & png-to-ico ./tvs-cp.png > ./dist/client/tvs-cp.ico",
+    "package": "rimraf ./release/* && pkg . --out-path ./release && create-nodew-exe ./release/tvs-cp.exe ./release/tvs-cp-headless.exe",
     "postinstall": "npm explore memoryjs -- npm run build64",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -47,8 +47,8 @@
     "@angular/cli": "~9.0.2",
     "@angular/compiler-cli": "~9.0.1",
     "@angular/language-service": "~9.0.1",
-    "@types/node": "^12.12.28",
     "@types/fast-levenshtein": "0.0.1",
+    "@types/node": "^12.12.28",
     "@types/ws": "^7.2.1",
     "awesome-typescript-loader": "^5.2.1",
     "codelyzer": "^5.1.2",
@@ -56,6 +56,7 @@
     "create-nodew-exe": "^1.0.5",
     "node-gyp": "^6.1.0",
     "pkg": "^4.4.3",
+    "png-to-ico": "^2.1.0",
     "rimraf": "^3.0.2",
     "ts-node": "~8.3.0",
     "tslint": "^6.0.0",
