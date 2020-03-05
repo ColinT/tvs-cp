@@ -70,9 +70,9 @@ import { execFile } from 'child_process';
 function spawnClient(port: string | number) {
   download({
     revision: '662092',
-    installPath: os.tmpdir,
+    installPath: os.tmpdir(),
   }).then((path) => {
-    const clientProcess = execFile(path, [ `--app=http://localhost:${port}` ], (error) => {
+    const clientProcess = execFile(path, [ `--app=http://localhost:${port}`, '--enable-automation' ], (error) => {
       if (!!error) {
         console.error(error);
         process.exit(1);

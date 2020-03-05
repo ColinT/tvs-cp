@@ -6,8 +6,8 @@
   "bin": "./dist/server/app.js",
   "scripts": {
     "start": "node ./dist/server/app.js",
-    "build": "rimraf ./dist/* && (ng build & ttsc --p ./tsconfig.server.json) & png-to-ico ./tvs-cp.png > ./dist/client/tvs-cp.ico",
-    "package": "rimraf ./release/* && pkg . --out-path ./release && create-nodew-exe ./release/tvs-cp.exe ./release/tvs-cp-headless.exe",
+    "build": "rimraf ./dist/* && ng build && ttsc --p ./tsconfig.server.json && png-to-ico ./tvs-cp.png > ./dist/client/tvs-cp.ico",
+    "package": "rimraf ./release/* && copyfiles ./patches/**/* ./release && pkg . --output ./release/tvs-cp-debug.exe && create-nodew-exe ./release/tvs-cp-debug.exe ./release/tvs-cp.exe",
     "postinstall": "npm explore memoryjs -- npm run build64",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -69,11 +69,7 @@
     "typescript-transform-paths": "^1.1.14"
   },
   "pkg": {
-    "assets": [
-      "./dist/**/*"
-    ],
-    "targets": [
-      "node10-win-x64"
-    ]
+    "assets": [ "./dist/**/*" ],
+    "targets": [ "node10-win-x64" ]
   }
 }
