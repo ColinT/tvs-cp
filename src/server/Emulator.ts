@@ -98,7 +98,8 @@ export class Emulator {
     this.state = EmulatorState.CONNECTED;
   }
 
-  public reset(): void { // required for net64 patch compatibility
+  public reset(): void {
+    // required for net64 patch compatibility
     this.setGameMode(1);
     this.setConnectionFlag(2);
     const buffer = Buffer.alloc(0x1c);
@@ -107,13 +108,15 @@ export class Emulator {
     }
   }
 
-  public setConnectionFlag(connectionFlag): void { // required for net64 patch compatibility
+  public setConnectionFlag(connectionFlag): void {
+    // required for net64 patch compatibility
     const tokenBuffer = Buffer.allocUnsafe(1);
     tokenBuffer.writeUInt8(connectionFlag, 0);
     this.writeMemory(0xff5ffc, tokenBuffer);
   }
 
-  public setGameMode(gameMode: number): void { // required for net64 patch compatibility
+  public setGameMode(gameMode: number): void {
+    // required for net64 patch compatibility
     const gameModeBuffer = Buffer.from(new Uint8Array([ gameMode ]).buffer as ArrayBuffer);
     const emptyBuffer = Buffer.alloc(0xc);
     emptyBuffer.writeUInt8(gameMode, 6);
@@ -126,7 +129,9 @@ export class Emulator {
    * Reads from the 'patches' folder and returns a list of all available patches.
    */
   public getAvailablePatches(): string[] {
-    return fs.readdirSync(patchesRoot).filter((filePath) => fs.lstatSync(filePath).isDirectory());
+    return fs
+      .readdirSync(patchesRoot)
+      .filter((filePath) => fs.lstatSync(path.join(patchesRoot, filePath)).isDirectory());
   }
 
   /**
@@ -134,7 +139,9 @@ export class Emulator {
    * @param patchName - Name of the patch, i.e. the name of the folder under the patches root directory.
    */
   public getPatchMetadata(patchName: string): PatchMetadata {
-    return JSON.parse(fs.readFileSync(path.join(patchesRoot, patchName, 'metadata.json')).toString('utf8')) as PatchMetadata;
+    return JSON.parse(
+      fs.readFileSync(path.join(patchesRoot, patchName, 'metadata.json')).toString('utf8')
+    ) as PatchMetadata;
   }
 
   /**
@@ -159,7 +166,7 @@ export class Emulator {
       const { byteOrder } = this.getPatchMetadata(patchName);
 
       const patchBufferPromises = patchFiles.map((patch) => {
-        return new Promise<{ patchId: number, data: Buffer }>((resolve, reject) => {
+        return new Promise<{ patchId: number; data: Buffer }>((resolve, reject) => {
           fs.readFile(path.join(patchesRoot, patchName, 'payload', patch), (error, data) => {
             if (error) {
               reject(error);
@@ -193,6 +200,7 @@ export class Emulator {
         this.writeMemory(patchBuffer.patchId, swappedData);
       }
     }
+    console.log('patched');
 
     this.state = EmulatorState.PATCHED;
   }
