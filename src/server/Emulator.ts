@@ -6,9 +6,21 @@ import * as path from 'path';
 import { Process } from 'common/types/Process';
 import { EmulatorState } from 'common/states/EmulatorState';
 
+export const patchesRoot = './patches';
+
 export interface ProcessReadWrite {
   readMemory: (offset: number, length: number) => Buffer | number;
   writeMemory: (offset: number, buffer: Buffer) => void;
+}
+
+/**
+ * Information regarding the format of the patch files.
+ */
+interface PatchMetadata {
+  /** Human readable list of preconditions for this patch to be applied. */
+  requirements: string[];
+  /** Byte order format of the patch files. Specified if a byte swap should be applied before patching. */
+  byteOrder?: undefined | '16' | '32' | '64';
 }
 
 /**
@@ -87,6 +99,7 @@ export class Emulator {
   }
 
   public reset(): void {
+    // required for net64 patch compatibility
     this.setGameMode(1);
     this.setConnectionFlag(2);
     const buffer = Buffer.alloc(0x1c);
@@ -96,12 +109,14 @@ export class Emulator {
   }
 
   public setConnectionFlag(connectionFlag): void {
+    // required for net64 patch compatibility
     const tokenBuffer = Buffer.allocUnsafe(1);
     tokenBuffer.writeUInt8(connectionFlag, 0);
     this.writeMemory(0xff5ffc, tokenBuffer);
   }
 
   public setGameMode(gameMode: number): void {
+    // required for net64 patch compatibility
     const gameModeBuffer = Buffer.from(new Uint8Array([ gameMode ]).buffer as ArrayBuffer);
     const emptyBuffer = Buffer.alloc(0xc);
     emptyBuffer.writeUInt8(gameMode, 6);
@@ -111,52 +126,81 @@ export class Emulator {
   }
 
   /**
-   * Injects all patch files in the 'patches' folder into the emulator RAM.
+   * Reads from the 'patches' folder and returns a list of all available patches.
    */
-  public async patchMemory(): Promise<void> {
+  public getAvailablePatches(): string[] {
+    return fs
+      .readdirSync(patchesRoot)
+      .filter((filePath) => fs.lstatSync(path.join(patchesRoot, filePath)).isDirectory());
+  }
+
+  /**
+   * Retrive the patch metadata file, given the name of the patch.
+   * @param patchName - Name of the patch, i.e. the name of the folder under the patches root directory.
+   */
+  public getPatchMetadata(patchName: string): PatchMetadata {
+    return JSON.parse(
+      fs.readFileSync(path.join(patchesRoot, patchName, 'metadata.json')).toString('utf8')
+    ) as PatchMetadata;
+  }
+
+  /**
+   * Injects all patch files in the 'patches' folder into the emulator RAM.
+   * @param requestedPatches - Names of directories in 'patches' folder to read patch files from. Defaults to all available patches.
+   */
+  public async patchMemory(requestedPatches?: string[]): Promise<void> {
     this.state = EmulatorState.PATCHING;
     console.log('Patching memory');
-    const basePath = './patches';
-    const patches = fs.readdirSync(basePath);
-    const patchBuffersPromise: Promise<{ patchId: number; data: Buffer }>[] = [];
-    for (const patch of patches) {
-      patchBuffersPromise.push(
-        new Promise((resolve, reject) => {
-          fs.readFile(path.join(basePath, patch), (err, data) => {
-            if (err) reject(err);
-            resolve({
-              patchId: parseInt(patch, 16),
-              data,
-            });
-          });
-        })
-      );
-    }
-    const patchBuffers = await Promise.all(patchBuffersPromise);
-    for (const patchBuffer of patchBuffers) {
-      this.writeMemory(patchBuffer.patchId, patchBuffer.data.swap32());
+
+    const availablePatches = this.getAvailablePatches();
+    let appliedPatches: string[] = [];
+
+    if (requestedPatches === undefined) {
+      appliedPatches = availablePatches; // If not specified
+    } else {
+      appliedPatches = availablePatches.filter(requestedPatches.includes);
     }
 
-    const net64BasePath = './net64-patches';
-    const net64Patches = fs.readdirSync(net64BasePath);
-    const net64PatchBuffersPromise: Promise<{ patchId: number; data: Buffer }>[] = [];
-    for (const net64Patch of net64Patches) {
-      net64PatchBuffersPromise.push(
-        new Promise((resolve, reject) => {
-          fs.readFile(path.join(net64BasePath, net64Patch), (err, data) => {
-            if (err) reject(err);
-            resolve({
-              patchId: parseInt(net64Patch, 16),
-              data,
-            });
+    for (const patchName of appliedPatches) {
+      const patchFiles = fs.readdirSync(path.join(patchesRoot, patchName, 'payload'));
+      const { byteOrder } = this.getPatchMetadata(patchName);
+
+      const patchBufferPromises = patchFiles.map((patch) => {
+        return new Promise<{ patchId: number; data: Buffer }>((resolve, reject) => {
+          fs.readFile(path.join(patchesRoot, patchName, 'payload', patch), (error, data) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve({
+                patchId: parseInt(patch, 16),
+                data,
+              });
+            }
           });
-        })
-      );
+        });
+      });
+
+      const patchBuffers = await Promise.all(patchBufferPromises);
+      for (const patchBuffer of patchBuffers) {
+        let swappedData: Buffer;
+        switch (byteOrder) {
+          case '16':
+            swappedData = patchBuffer.data.swap16();
+            break;
+          case '32':
+            swappedData = patchBuffer.data.swap32();
+            break;
+          case '64':
+            swappedData = patchBuffer.data.swap64();
+            break;
+          default:
+            swappedData = patchBuffer.data;
+            break;
+        }
+        this.writeMemory(patchBuffer.patchId, swappedData);
+      }
     }
-    const net64PatchBuffers = await Promise.all(net64PatchBuffersPromise);
-    for (const net64PatchBuffer of net64PatchBuffers) {
-      this.writeMemory(net64PatchBuffer.patchId, net64PatchBuffer.data);
-    }
+    console.log('patched');
 
     this.state = EmulatorState.PATCHED;
   }
