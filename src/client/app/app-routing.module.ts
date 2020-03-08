@@ -1,18 +1,22 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
+import { OAuthModule } from './oauth/oauth.module';
+import { EmulatorModule } from './emulator/emulator.module';
+import { TwitchModule } from './twitch/twitch.module';
+
 const routes: Routes = [
   {
     path: 'oauth',
-    loadChildren: () => import('./oauth/oauth.module').then((m) => m.OAuthModule),
+    loadChildren: (): Promise<OAuthModule> => import('./oauth/oauth.module').then((m) => m.OAuthModule),
   },
   {
     path: 'emulator',
-    loadChildren: () => import('./emulator/emulator.module').then((m) => m.EmulatorModule),
+    loadChildren: (): Promise<EmulatorModule> => import('./emulator/emulator.module').then((m) => m.EmulatorModule),
   },
   {
     path: 'twitch',
-    loadChildren: () => import('./twitch/twitch.module').then((m) => m.TwitchModule),
+    loadChildren: (): Promise<TwitchModule> => import('./twitch/twitch.module').then((m) => m.TwitchModule),
   },
   { path: '', redirectTo: './oauth', pathMatch: 'full' },
   { path: '**', redirectTo: '/oauth', pathMatch: 'full' },

@@ -33,7 +33,7 @@ export class Emulator {
 
   private state = EmulatorState.NOT_CONNECTED;
 
-  public getState() {
+  public getState(): EmulatorState {
     return this.state;
   }
 
@@ -43,7 +43,7 @@ export class Emulator {
    * @param {RegExp} [processName] - Filter the results with a regular expression.
    */
   public static getAllProcesses(processName?: RegExp): Process[] {
-    if (!!processName) {
+    if (processName) {
       return memoryjs.getProcesses().filter((process: Process) => {
         return process.szExeFile.match(processName);
       });
@@ -70,8 +70,9 @@ export class Emulator {
     const processObject = memoryjs.openProcess(processId);
     console.log('Process loaded successfully');
     this.processReadWrite = {
-      readMemory: (offset: number, length: number) => memoryjs.readBuffer(processObject.handle, offset, length),
-      writeMemory: (offset: number, buffer: Buffer) => memoryjs.writeBuffer(processObject.handle, offset, buffer),
+      readMemory: (offset: number, length: number): number | Buffer =>
+        memoryjs.readBuffer(processObject.handle, offset, length),
+      writeMemory: (offset: number, buffer: Buffer): void => memoryjs.writeBuffer(processObject.handle, offset, buffer),
     };
     console.log('Looking up base address');
     this.baseAddress = -1;
@@ -209,7 +210,7 @@ export class Emulator {
    * @param {number} offset - Offset
    * @param {Buffer} buffer - Buffer
    */
-  public writeMemory(offset: number, buffer: Buffer) {
+  public writeMemory(offset: number, buffer: Buffer): void {
     this.processReadWrite.writeMemory(this.baseAddress + offset, buffer);
   }
 
@@ -242,7 +243,7 @@ export class Emulator {
   /**
    *
    */
-  public doEffect(effect: string) {
+  public doEffect(effect: string): void {
     const messageBuffer = Buffer.from(effect);
     const effectMessage = Buffer.alloc(512);
     const minBitsBuffer = Buffer.from([ 0x0a ]);

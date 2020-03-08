@@ -27,7 +27,7 @@ export class EmulatorComponent {
 
   constructor(private http: HttpClient) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.getEmulatorList();
     this.getEmulatorStatus();
   }
@@ -82,7 +82,8 @@ export class EmulatorComponent {
     return this.http
       .post(`${baseUrl}/api/emulator/patch`, {})
       .toPromise()
-      .then((response) => {
+      .then((_response) => {
+        // TODO use response
         this.emulatorState = EmulatorState.PATCHED;
       })
       .catch((error) => {
