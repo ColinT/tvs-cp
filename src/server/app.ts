@@ -45,7 +45,7 @@ export const oAuthManager = new OAuthManager(
 // set emulator reference
 import { Emulator } from 'server/Emulator';
 let emulator: Emulator | undefined;
-export function setEmulator(value: Emulator | undefined) {
+export function setEmulator(value: Emulator | undefined): void {
   emulator = value;
 }
 export function getEmulator(): Emulator | undefined {
@@ -55,7 +55,7 @@ export function getEmulator(): Emulator | undefined {
 // set socket reference
 import * as WebSocket from 'ws';
 let twitchSocket: WebSocket | undefined;
-export function setTwitchSocket(value: WebSocket | undefined) {
+export function setTwitchSocket(value: WebSocket | undefined): void {
   twitchSocket = value;
 }
 export function getTwitchSocket(): WebSocket | undefined {
@@ -67,13 +67,13 @@ import * as download from 'download-chromium';
 import * as os from 'os';
 import { execFile } from 'child_process';
 
-function spawnClient(port: string | number) {
+function spawnClient(port: string | number): void {
   download({
     revision: '662092',
     installPath: os.tmpdir(),
   }).then((path) => {
     const clientProcess = execFile(path, [ `--app=http://localhost:${port}`, '--enable-automation' ], (error) => {
-      if (!!error) {
+      if (error) {
         console.error(error);
         process.exit(1);
       } else {

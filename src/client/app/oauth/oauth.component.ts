@@ -28,7 +28,7 @@ export class OAuthComponent implements OnInit {
   public TokenSaveState = TokenSaveState;
   public tokenSaveState = TokenSaveState.LOADING;
 
-  public newTokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=q6batx0epp608isickayubi39itsckt&redirect_uri=https%3A%2F%2Ftwitchapps.com%2Ftmi%2F&response_type=token&scope=channel%3Aread%3Aredemptions`;
+  public newTokenUrl = 'https://id.twitch.tv/oauth2/authorize?client_id=q6batx0epp608isickayubi39itsckt&redirect_uri=https%3A%2F%2Ftwitchapps.com%2Ftmi%2F&response_type=token&scope=channel%3Aread%3Aredemptions';
 
   public oAuthTokenForm = new FormGroup({
     token: new FormControl('', Validators.required),
@@ -36,12 +36,12 @@ export class OAuthComponent implements OnInit {
 
   constructor(private http: HttpClient) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.checkTokenValidity();
     this.checkTokenSaveStatus();
   }
 
-  async checkTokenValidity() {
+  async checkTokenValidity(): Promise<boolean> {
     return this.http
       .get<boolean>(`${baseUrl}/api/oauth/token-validity?scope=channel:read:redemptions`)
       .toPromise()
@@ -52,10 +52,11 @@ export class OAuthComponent implements OnInit {
       .catch((error) => {
         console.error(error);
         this.state = OAuthTokenState.INVALID;
+        return false;
       });
   }
 
-  async checkTokenSaveStatus() {
+  async checkTokenSaveStatus(): Promise<void> {
     return this.http
       .get<boolean>(`${baseUrl}/api/oauth/token-save-status`)
       .toPromise()
@@ -68,7 +69,7 @@ export class OAuthComponent implements OnInit {
       });
   }
 
-  async submitOAuthToken(form: FormGroup) {
+  async submitOAuthToken(form: FormGroup): Promise<void> {
     if (form.invalid) {
       return;
     } else {
@@ -81,7 +82,7 @@ export class OAuthComponent implements OnInit {
     }
   }
 
-  async toggleTokenSaveStatus() {
+  async toggleTokenSaveStatus(): Promise<void> {
     const previousTokenSaveState = this.tokenSaveState;
     this.tokenSaveState = TokenSaveState.LOADING;
     try {

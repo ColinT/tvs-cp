@@ -34,11 +34,11 @@ export class TwitchComponent implements OnInit {
 
   constructor(private http: HttpClient) {}
 
-  async ngOnInit() {
+  async ngOnInit(): Promise<void> {
     await Promise.all([ this.checkTokenValidity(), this.getEmulatorStatus(), this.getTwitchSocketStatus() ]);
   }
 
-  async checkTokenValidity() {
+  async checkTokenValidity(): Promise<void> {
     return this.http
       .get<boolean>(`${baseUrl}/api/oauth/token-validity?scope=channel:read:redemptions`)
       .toPromise()

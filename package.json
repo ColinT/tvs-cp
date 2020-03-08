@@ -10,6 +10,7 @@
     "package": "rimraf ./release/* && copyfiles ./patches/**/* ./release && pkg . --output ./release/tvs-cp-debug.exe && create-nodew-exe ./release/tvs-cp-debug.exe ./release/tvs-cp.exe",
     "release": "rimraf ./dist/* && ng build --prod && ttsc --p ./tsconfig.server.json && png-to-ico ./tvs-cp.png > ./dist/client/tvs-cp.ico && npm run package",
     "postinstall": "npm explore memoryjs -- npm run build64",
+    "lint": "eslint ./src --ext .ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Colin Tong (https://github.com/ColinT)",
@@ -55,10 +56,13 @@
     "@types/fast-levenshtein": "0.0.1",
     "@types/node": "^12.12.28",
     "@types/ws": "^7.2.1",
+    "@typescript-eslint/eslint-plugin": "^2.22.0",
+    "@typescript-eslint/parser": "^2.22.0",
     "awesome-typescript-loader": "^5.2.1",
     "codelyzer": "^5.1.2",
     "copyfiles": "^2.2.0",
     "create-nodew-exe": "^1.0.5",
+    "eslint": "^6.8.0",
     "node-gyp": "^6.1.0",
     "pkg": "^4.4.3",
     "png-to-ico": "^2.1.0",
@@ -70,11 +74,7 @@
     "typescript-transform-paths": "^1.1.14"
   },
   "pkg": {
-    "assets": [
-      "./dist/**/*"
-    ],
-    "targets": [
-      "node10-win-x64"
-    ]
+    "assets": [ "./dist/**/*" ],
+    "targets": [ "node10-win-x64" ]
   }
 }
