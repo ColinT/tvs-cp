@@ -36,7 +36,7 @@ export class OAuthManager {
           },
           responseType: 'json',
         });
-        if (!!scopes) {
+        if (scopes) {
           return scopes.every((scope) => response.data.scopes.includes(scope));
         } else {
           return true;
@@ -47,41 +47,41 @@ export class OAuthManager {
     }
   }
 
-  private loadTokenSync() {
+  private loadTokenSync(): void {
     if (!!this._path && fs.existsSync(this._path)) {
       // If the file exists, load the token
       this._oAuthToken = fs.readFileSync(this._path).toString().replace(new RegExp(/^oauth:/i), '');
     }
   }
 
-  public saveTokenSync(token: string) {
+  public saveTokenSync(token: string): void {
     token = token.replace(new RegExp(/^oauth:/i), '');
-    if (!!this._path) {
+    if (this._path) {
       // Save token to file
       fs.writeFileSync(this._path, token);
     }
     this._oAuthToken = token;
   }
 
-  public deleteTokenSync() {
+  public deleteTokenSync(): void {
     if (!!this._path && fs.existsSync(this._path)) {
       fs.unlinkSync(this._path);
     }
     this._path = undefined;
   }
 
-  public getToken() {
+  public getToken(): string | null {
     return this._oAuthToken;
   }
 
-  public setToken(token: string) {
+  public setToken(token: string): void {
     token = token.replace(new RegExp(/^oauth:/i), '');
     this._oAuthToken = token;
   }
 
-  public setPath(path: string) {
+  public setPath(path: string): void {
     this._path = path;
-    if (!!this._oAuthToken) {
+    if (this._oAuthToken) {
       this.saveTokenSync(this._oAuthToken);
     }
   }

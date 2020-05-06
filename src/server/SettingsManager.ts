@@ -3,6 +3,9 @@ import * as path from 'path';
 
 import { cwd } from 'server/app';
 
+/** Possible types of a settings leaf */
+type SettingsData = number | string | boolean | { [key: string]: SettingsData } | undefined;
+
 /**
  * Manages the settings file for user settings.
  */
@@ -28,14 +31,14 @@ export class SettingsManager {
   /**
    * Read settings from file.
    */
-  private readFileSync() {
+  private readFileSync(): void {
     this._settings = JSON.parse(fs.readFileSync(this._path).toString());
   }
 
   /**
    * Write settings to file.
    */
-  public writeFileSync() {
+  public writeFileSync(): void {
     fs.writeFileSync(this._path, JSON.stringify(this._settings));
   }
 
@@ -44,7 +47,7 @@ export class SettingsManager {
    * @param keyPath - The nested slash separated key to get data from.
    * @returns The data.
    */
-  public get(keyPath: string): any {
+  public get(keyPath: string): Settings | SettingsData {
     const splitPaths = keyPath.split('/');
     let currentNode = this._settings;
     for (const segment of splitPaths) {
@@ -62,7 +65,7 @@ export class SettingsManager {
    * @param data - The data to write.
    * @param options.merge - Whether or not to merge the data. Otherwise unspecified fields are overwritten.
    */
-  public set(keyPath: string, data: any, options: { merge: boolean } = { merge: false }) {
+  public set(keyPath: string, data: SettingsData, options: { merge: boolean } = { merge: false }): void {
     const splitPaths = keyPath.split('/');
 
     if (splitPaths[0] === undefined) {
@@ -108,20 +111,25 @@ export class SettingsManager {
     this.writeFileSync();
   }
 
-  private recursiveMerge(source: Object, target: Object): Object {
+  private recursiveMerge(
+    source: Record<string, SettingsData>,
+    target: Record<string, SettingsData>
+  ): Record<string, SettingsData> {
     if (typeof source === 'object' && source !== null && typeof target === 'object' && target !== null) {
       // If both source and target are objects then merge their properties
       for (const sourceKey in source) {
-        if (source.hasOwnProperty(sourceKey)) {
-          if (target.hasOwnProperty(sourceKey)) {
+        const sourceData = source[sourceKey];
+        const targetData = target[sourceKey];
+        if (sourceData) {
+          if (targetData) {
             if (
-              typeof target[sourceKey] === 'object' &&
-              target[sourceKey] !== null &&
-              typeof source[sourceKey] === 'object' &&
-              source[sourceKey] !== null
+              typeof targetData === 'object' &&
+              targetData !== null &&
+              typeof sourceData === 'object' &&
+              sourceData !== null
             ) {
               // If target has a property of the same name and they are both objects, then merge them
-              target[sourceKey] = JSON.parse(JSON.stringify(this.recursiveMerge(source[sourceKey], target[sourceKey])));
+              target[sourceKey] = JSON.parse(JSON.stringify(this.recursiveMerge(sourceData, targetData)));
             } else {
               // If only one of them is an object, then overwrite
               target[sourceKey] = JSON.parse(JSON.stringify(source[sourceKey]));
@@ -138,7 +146,7 @@ export class SettingsManager {
     return target;
   }
 
-  public static getDefaultSettings(): Settings {
+  public static getDefaultSettings(): Required<Settings> {
     return {
       oAuthTokenPath: path.join(cwd, './oauth-token.txt'),
       oauth: {

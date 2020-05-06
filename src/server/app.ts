@@ -1,6 +1,3 @@
-import * as dotenv from 'dotenv';
-dotenv.config();
-
 export const cwd = process.cwd();
 
 import * as path from 'path';
@@ -39,13 +36,13 @@ export const settingsManager = new SettingsManager(path.join(cwd, './settings.js
 // setup oauth manager
 import { OAuthManager } from 'server/OAuthManager';
 export const oAuthManager = new OAuthManager(
-  settingsManager.get('oauth/tokenSaveStatus') ? settingsManager.get('oAuthTokenPath') : undefined
+  settingsManager.get('oauth/tokenSaveStatus') ? settingsManager.get('oAuthTokenPath') as string : undefined
 );
 
 // set emulator reference
 import { Emulator } from 'server/Emulator';
 let emulator: Emulator | undefined;
-export function setEmulator(value: Emulator | undefined) {
+export function setEmulator(value: Emulator | undefined): void {
   emulator = value;
 }
 export function getEmulator(): Emulator | undefined {
@@ -55,7 +52,7 @@ export function getEmulator(): Emulator | undefined {
 // set socket reference
 import * as WebSocket from 'ws';
 let twitchSocket: WebSocket | undefined;
-export function setTwitchSocket(value: WebSocket | undefined) {
+export function setTwitchSocket(value: WebSocket | undefined): void {
   twitchSocket = value;
 }
 export function getTwitchSocket(): WebSocket | undefined {
@@ -67,37 +64,21 @@ import * as download from 'download-chromium';
 import * as os from 'os';
 import { execFile } from 'child_process';
 
-function spawnClient(port: string | number) {
+function spawnClient(port: string | number): void {
   download({
     revision: '662092',
     installPath: os.tmpdir(),
   }).then((path) => {
     const clientProcess = execFile(path, [ `--app=http://localhost:${port}`, '--enable-automation' ], (error) => {
-      if (!!error) {
+      if (error) {
         console.error(error);
         process.exit(1);
       } else {
         process.exit(0);
       }
     });
-
     clientProcess.on('close', () => {
       process.exit(0);
     });
   });
 }
-
-// import { Main } from './Main';
-// const main = new Main();
-// try {
-//   main.startUp();
-// } catch (error) {
-//   console.error(error);
-// }
-
-// import * as util from 'util';
-// import { OAuthManager } from './OAuthManager';
-// (async () => {
-//   const token = await OAuthManager.getOAuthToken();
-//   console.log(util.inspect(token));
-// })();

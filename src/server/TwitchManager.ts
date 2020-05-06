@@ -30,7 +30,7 @@ export class TwitchManager {
     return axios
       .get('https://api.twitch.tv/kraken', {
         headers: {
-          Accept: `application/vnd.twitchtv.v5+json`,
+          Accept: 'application/vnd.twitchtv.v5+json',
           Authorization: `OAuth ${token}`,
         },
         responseType: 'json',
@@ -50,7 +50,7 @@ export class TwitchManager {
     );
   }
 
-  private static handleRedemption(redemptionData, emulator: Emulator) {
+  private static handleRedemption(redemptionData, emulator: Emulator): void {
     const command: string = redemptionData.data.redemption.reward.title.toLowerCase();
     const userInput: string = redemptionData.data.redemption.user_input;
     console.log('Executing command: ' + command);
@@ -60,9 +60,10 @@ export class TwitchManager {
           const id = this.getCharacterIdFromName(userInput);
           console.log('Changing to character id:', id);
           emulator.changeCharacter(id);
+          break;
         }
         default: {
-          emulator.doEffect(`${command}${!!userInput ? ` ${userInput}` : ''}`);
+          emulator.doEffect(`${command}${userInput ? ` ${userInput}` : ''}`);
         }
       }
     }
