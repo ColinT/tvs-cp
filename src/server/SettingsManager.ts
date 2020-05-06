@@ -146,7 +146,7 @@ export class SettingsManager {
     return target;
   }
 
-  public static getDefaultSettings(): Settings {
+  public static getDefaultSettings(): Required<Settings> {
     return {
       oAuthTokenPath: path.join(cwd, './oauth-token.txt'),
       oauth: {
