@@ -28,11 +28,7 @@ export class OAuthComponent implements OnInit {
   public TokenSaveState = TokenSaveState;
   public tokenSaveState = TokenSaveState.LOADING;
 
-<<<<<<< HEAD
   public newTokenUrl = 'https://id.twitch.tv/oauth2/authorize?client_id=q6batx0epp608isickayubi39itsckt&redirect_uri=https%3A%2F%2Ftwitchapps.com%2Ftmi%2F&response_type=token&scope=channel%3Aread%3Aredemptions';
-=======
-  public newTokenUrl = `https://id.twitch.tv/oauth2/authorize?client_id=q6batx0epp608isickayubi39itsckt&redirect_uri=https%3A%2F%2Ftwitchapps.com%2Ftmi%2F&response_type=token&scope=channel%3Aread%3Aredemptions`;
->>>>>>> master
 
   public oAuthTokenForm = new FormGroup({
     token: new FormControl('', Validators.required),
@@ -40,20 +36,12 @@ export class OAuthComponent implements OnInit {
 
   constructor(private http: HttpClient) {}
 
-<<<<<<< HEAD
   ngOnInit(): void {
-=======
-  ngOnInit() {
->>>>>>> master
     this.checkTokenValidity();
     this.checkTokenSaveStatus();
   }
 
-<<<<<<< HEAD
   async checkTokenValidity(): Promise<boolean> {
-=======
-  async checkTokenValidity() {
->>>>>>> master
     return this.http
       .get<boolean>(`${baseUrl}/api/oauth/token-validity?scope=channel:read:redemptions`)
       .toPromise()
@@ -64,18 +52,11 @@ export class OAuthComponent implements OnInit {
       .catch((error) => {
         console.error(error);
         this.state = OAuthTokenState.INVALID;
-<<<<<<< HEAD
         return false;
       });
   }
 
   async checkTokenSaveStatus(): Promise<void> {
-=======
-      });
-  }
-
-  async checkTokenSaveStatus() {
->>>>>>> master
     return this.http
       .get<boolean>(`${baseUrl}/api/oauth/token-save-status`)
       .toPromise()
@@ -88,11 +69,7 @@ export class OAuthComponent implements OnInit {
       });
   }
 
-<<<<<<< HEAD
   async submitOAuthToken(form: FormGroup): Promise<void> {
-=======
-  async submitOAuthToken(form: FormGroup) {
->>>>>>> master
     if (form.invalid) {
       return;
     } else {
@@ -105,11 +82,7 @@ export class OAuthComponent implements OnInit {
     }
   }
 
-<<<<<<< HEAD
   async toggleTokenSaveStatus(): Promise<void> {
-=======
-  async toggleTokenSaveStatus() {
->>>>>>> master
     const previousTokenSaveState = this.tokenSaveState;
     this.tokenSaveState = TokenSaveState.LOADING;
     try {
