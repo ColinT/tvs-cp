@@ -3,6 +3,7 @@ const router = express.Router();
 
 import { oAuthManager, settingsManager } from 'server/app';
 import { coerceBoolean } from 'server/utils';
+import { SettingsManager } from 'server/SettingsManager';
 
 router.put('/token', (_req, _res, next) => next());
 router.post('/token', async (req, res) => {
@@ -39,7 +40,10 @@ router.post('/token-save-status', async (req, res) => {
     const tokenSaveStatus = coerceBoolean(req.body);
     settingsManager.set('oauth/tokenSaveStatus', tokenSaveStatus);
     if (tokenSaveStatus) {
-      oAuthManager.setPath(settingsManager.get('oAuthTokenPath'));
+      const tokenPath =
+        (settingsManager.get('oAuthTokenPath') as string | undefined) ||
+        SettingsManager.getDefaultSettings().oAuthTokenPath;
+      oAuthManager.setPath(tokenPath);
     } else {
       oAuthManager.deleteTokenSync();
     }
