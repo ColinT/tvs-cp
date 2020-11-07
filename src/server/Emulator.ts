@@ -32,6 +32,7 @@ export class Emulator {
   private processReadWrite: ProcessReadWrite;
 
   private state = EmulatorState.NOT_CONNECTED;
+  private emulatorVersion: '1.6' | '2.2MM';
 
   public getState(): EmulatorState {
     return this.state;
@@ -61,8 +62,6 @@ export class Emulator {
     this.state = EmulatorState.CONNECTING;
     console.log('Emulator constructor called with processId:', processId);
     try {
-      const processList = Emulator.getAllProcesses(/project64/i);
-      console.log(processList);
       memoryjs.openProcess(processId);
     } catch (error) {
       console.log('error opening process with id', processId);
@@ -92,6 +91,16 @@ export class Emulator {
     if (this.baseAddress === -1) {
       throw new Error('Could not find base address');
     }
+
+    switch (processObject.modBaseAddr) {
+      case 4194304:
+        this.emulatorVersion = '1.6';
+        break;
+      case 9175040:
+        this.emulatorVersion = '2.2MM';
+        break;
+    }
+    console.log('Detected PJ64 version', this.emulatorVersion);
 
     this.changeCharacter(0);
     this.reset();
@@ -136,7 +145,7 @@ export class Emulator {
   }
 
   /**
-   * Retrive the patch metadata file, given the name of the patch.
+   * Retrieve the patch metadata file, given the name of the patch.
    * @param patchName - Name of the patch, i.e. the name of the folder under the patches root directory.
    */
   public getPatchMetadata(patchName: string): PatchMetadata {
@@ -154,6 +163,7 @@ export class Emulator {
     console.log('Patching memory');
 
     const availablePatches = this.getAvailablePatches();
+    console.log({ availablePatches });
     let appliedPatches: string[] = [];
 
     if (requestedPatches === undefined) {
@@ -164,7 +174,17 @@ export class Emulator {
 
     for (const patchName of appliedPatches) {
       const patchFiles = fs.readdirSync(path.join(patchesRoot, patchName, 'payload'));
-      const { byteOrder } = this.getPatchMetadata(patchName);
+      const { byteOrder, requirements } = this.getPatchMetadata(patchName);
+
+      // PJ64 v1.6 does not support 16MB emulated RAM; skip all those patches by default
+      if (
+        requestedPatches === undefined &&
+        this.emulatorVersion === '1.6' &&
+        requirements.includes('16MB Emulated RAM')
+      ) {
+        console.log('Skipping', patchName, 'due to unmet 16MB RAM requirement.');
+        continue;
+      }
 
       const patchBufferPromises = patchFiles.map((patch) => {
         return new Promise<{ patchId: number; data: Buffer }>((resolve, reject) => {
@@ -200,8 +220,9 @@ export class Emulator {
         }
         this.writeMemory(patchBuffer.patchId, swappedData);
       }
+      console.log('patched', patchName);
     }
-    console.log('patched');
+    console.log('finished patching');
 
     this.state = EmulatorState.PATCHED;
   }
