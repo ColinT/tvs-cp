@@ -18,7 +18,14 @@ router.post('/token', async (req, res) => {
 
 router.get('/token-validity', async (req, res) => {
   try {
-    const requestScopes: string | undefined = req.query.scopes;
+    let requestScopes: string | undefined;
+    if (!req.query.scopes) {
+      requestScopes = undefined;
+    } else if (Array.isArray(req.query.scopes)) {
+      requestScopes = req.query.scopes.join(' ');
+    } else {
+      requestScopes = req.query.scopes.toString();
+    }
     const scopes = requestScopes ? requestScopes.split(' ') : undefined;
     res.status(200).send(await oAuthManager.getTokenValidity(scopes));
   } catch (error) {
