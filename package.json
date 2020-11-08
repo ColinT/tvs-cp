@@ -1,6 +1,6 @@
 {
   "name": "tvs-cp",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "./dist/server/app.js",
   "bin": "./dist/server/app.js",
@@ -73,11 +73,7 @@
     "typescript-transform-paths": "^2.0.2"
   },
   "pkg": {
-    "assets": [
-      "./dist/**/*"
-    ],
-    "targets": [
-      "node10-win-x64"
-    ]
+    "assets": [ "./dist/**/*" ],
+    "targets": [ "node10-win-x64" ]
   }
 }
