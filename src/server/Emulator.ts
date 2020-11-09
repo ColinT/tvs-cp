@@ -118,7 +118,7 @@ export class Emulator {
     }
   }
 
-  public setConnectionFlag(connectionFlag): void {
+  public setConnectionFlag(connectionFlag: number): void {
     // required for net64 patch compatibility
     const tokenBuffer = Buffer.allocUnsafe(1);
     tokenBuffer.writeUInt8(connectionFlag, 0);
