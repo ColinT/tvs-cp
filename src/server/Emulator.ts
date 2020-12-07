@@ -92,13 +92,10 @@ export class Emulator {
       throw new Error('Could not find base address');
     }
 
-    switch (processObject.modBaseAddr) {
-      case 4194304:
-        this.emulatorVersion = '1.6';
-        break;
-      case 9175040:
-        this.emulatorVersion = '2.2MM';
-        break;
+    if (processObject.modBaseAddr === 4194304) {
+      this.emulatorVersion = '1.6';
+    } else if (this.baseAddress === 0x52b40000) {
+      this.emulatorVersion = '2.2MM';
     }
     console.log('Detected PJ64 version', this.emulatorVersion);
 
