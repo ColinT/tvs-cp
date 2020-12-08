@@ -3,7 +3,9 @@
   "version": "1.1.0",
   "description": "",
   "main": "./dist/server/app.js",
-  "bin": "./dist/server/app.js",
+  "bin": {
+    "tvs-cp": "dist/server/app.js"
+  },
   "scripts": {
     "start": "node ./dist/server/app.js",
     "build": "rimraf ./dist/* && ng build && ttsc --p ./tsconfig.server.json && png-to-ico ./tvs-cp.png > ./dist/client/tvs-cp.ico",
@@ -33,31 +35,31 @@
     "@angular/platform-browser-dynamic": "^10.2.2",
     "@angular/router": "^10.2.2",
     "@ng-bootstrap/ng-bootstrap": "^8.0.0",
-    "@types/express": "^4.17.8",
     "axios": "^0.21.0",
     "bootstrap": "^4.5.3",
     "cors": "^2.8.5",
     "download-chromium": "^2.2.1",
     "express": "^4.17.1",
     "fast-levenshtein": "^3.0.0",
-    "memoryjs": "^3.2.3",
+    "memoryjs": "^3.4.0",
+    "popper.js": "^1.16.1",
     "request": "^2.88.0",
     "rxjs": "^6.6.3",
     "tslib": "^2.0.0",
     "ws": "^7.3.1",
-    "zone.js": "^0.11.3"
+    "zone.js": "^0.10.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.1002.0",
     "@angular/cli": "^10.2.0",
     "@angular/compiler-cli": "^10.2.2",
     "@angular/language-service": "^10.2.2",
+    "@types/express": "^4.17.9",
     "@types/fast-levenshtein": "0.0.1",
     "@types/node": "^14.14.6",
     "@types/ws": "^7.2.9",
     "@typescript-eslint/eslint-plugin": "^4.6.1",
     "@typescript-eslint/parser": "^4.6.1",
-    "awesome-typescript-loader": "^5.2.1",
     "codelyzer": "^6.0.1",
     "copyfiles": "^2.4.0",
     "create-nodew-exe": "^1.0.6",
@@ -77,7 +79,7 @@
       "./dist/**/*"
     ],
     "targets": [
-      "node10-win-x64"
+      "node14-win-x64"
     ]
   }
 }
