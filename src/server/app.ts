@@ -21,6 +21,8 @@ server.listen(0, () => {
   spawnClient(port);
 });
 
+import { isProcessAlive } from './utils';
+
 // Direct all api calls to the api
 import api from 'server/api/api';
 app.use('/api', api);
@@ -43,7 +45,24 @@ export const oAuthManager = new OAuthManager(
 import { Emulator } from 'server/Emulator';
 let emulator: Emulator | undefined;
 export function setEmulator(value: Emulator | undefined): void {
+  // destroy old emulator
+  if (!!emulator) {
+    emulator.destroy();
+  }
+  // set new emulator value
   emulator = value;
+  // if new emulator exists
+  if (!!emulator) {
+    const currentEmulator = emulator;
+    const checkProcessDiedInterval = setInterval(() => {
+      if (!isProcessAlive(currentEmulator.processId)) {
+        console.log('Emulator was closed');
+        currentEmulator.destroy();
+        emulator = undefined;
+        clearInterval(checkProcessDiedInterval);
+      }
+    }, 100);
+  }
 }
 export function getEmulator(): Emulator | undefined {
   return emulator;

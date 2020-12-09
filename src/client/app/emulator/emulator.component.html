@@ -9,6 +9,20 @@
     </p>
   </div>
 
+  <!-- #region settings -->
+  <mat-card class="my-2">
+    <mat-card-content>
+      <mat-action-list>
+
+        <mat-checkbox [checked]="isAutoPatchingEnabled" (change)="setIsAutoPatchingEnabled($event.checked)">
+          Automatically patch emulator on reset
+        </mat-checkbox>
+
+      </mat-action-list>
+    </mat-card-content>
+  </mat-card>
+  <!-- #endregion settings -->
+
   <!-- #region emulator list state -->
   <ng-container *ngIf="emulatorListState === EmulatorListState.LOADING">
     <div class="d-flex align-items-center justify-content-center">
