@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { Process } from 'common/types/Process';
 import { EmulatorState } from 'common/states/EmulatorState';
 
 import { baseUrl } from 'client/config';
+import { coerceBoolean } from 'server/utils';
 
 enum EmulatorListState {
   LOADING = 1,
@@ -16,7 +18,7 @@ enum EmulatorListState {
   templateUrl: './emulator.component.html',
   styleUrls: [ './emulator.component.scss' ],
 })
-export class EmulatorComponent {
+export class EmulatorComponent implements OnInit, OnDestroy {
   public EmulatorListState = EmulatorListState;
   public emulatorListState = EmulatorListState.LOADING;
 
@@ -25,11 +27,24 @@ export class EmulatorComponent {
 
   public emulatorList: Process[] = [];
 
-  constructor(private http: HttpClient) {}
+  public isAutoPatchingEnabled: boolean;
+
+  private checkEmulatorStatusInterval: NodeJS.Timeout;
+
+  constructor(private http: HttpClient, private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
     this.getEmulatorList();
     this.getEmulatorStatus();
+    this.getIsAutoPatchingEnabled();
+
+    this.checkEmulatorStatusInterval = setInterval(() => {
+      this.getEmulatorStatus();
+    }, 1000);
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.checkEmulatorStatusInterval);
   }
 
   async getEmulatorList(): Promise<void> {
@@ -71,9 +86,22 @@ export class EmulatorComponent {
         this.emulatorState = EmulatorState.CONNECTED;
         response.baseAddress;
       })
-      .catch((error) => {
-        console.error(error);
-        throw error;
+      .catch((error: HttpErrorResponse) => {
+        if (error.error instanceof ErrorEvent) {
+          console.error(error);
+          throw error;
+        } else {
+          if (error.status === 404) {
+            // Selected emulator process died
+            // Remove the selected process from the emulator list
+            const index = this.emulatorList.findIndex((emulator) => emulator === process);
+            this.emulatorList.splice(index, 1);
+            this.snackBar.open('The selected emulator could not be found.', undefined, { duration: 4000 });
+          } else {
+            console.error(error);
+            throw error;
+          }
+        }
       });
   }
 
@@ -89,6 +117,32 @@ export class EmulatorComponent {
       .catch((error) => {
         console.error(error);
         throw error; // TODO Let the user know why the patch request failed.
+      });
+  }
+
+  async getIsAutoPatchingEnabled(): Promise<void> {
+    return this.http
+      .get(`${baseUrl}/api/emulator/is-auto-patching-enabled`)
+      .toPromise()
+      .then((response: string | boolean) => {
+        this.isAutoPatchingEnabled = coerceBoolean(response);
+      })
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
+  }
+
+  async setIsAutoPatchingEnabled(value: boolean): Promise<void> {
+    this.http
+      .post(`${baseUrl}/api/emulator/is-auto-patching-enabled`, value)
+      .toPromise()
+      .then(() => {
+        this.isAutoPatchingEnabled = value;
+      })
+      .catch((error) => {
+        console.error(error);
+        throw error;
       });
   }
 }
