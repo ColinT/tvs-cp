@@ -59,6 +59,10 @@ export class SettingsManager {
     return currentNode;
   }
 
+  public getBoolean(keyPath: string): boolean {
+    return !!this.get(keyPath);
+  }
+
   /**
    * Set data at a nested key. This data is serialized as a JSON.
    * @param keyPath - The nested slash separated key to write data to.
@@ -152,6 +156,9 @@ export class SettingsManager {
       oauth: {
         tokenSaveStatus: false,
       },
+      emulator: {
+        isAutoPatchingEnabled: true,
+      },
     };
   }
 }
@@ -160,5 +167,8 @@ interface Settings {
   oAuthTokenPath?: string;
   oauth?: {
     tokenSaveStatus: boolean;
+  };
+  emulator?: {
+    isAutoPatchingEnabled: boolean;
   };
 }

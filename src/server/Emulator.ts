@@ -1,10 +1,12 @@
 import * as memoryjs from 'memoryjs';
+import { Subscription } from 'rxjs';
 
 import * as fs from 'fs';
 import * as path from 'path';
 
 import { Process } from 'common/types/Process';
 import { EmulatorState } from 'common/states/EmulatorState';
+import { MemoryWatcher } from './MemoryWatcher';
 
 export const patchesRoot = './patches';
 
@@ -29,10 +31,18 @@ interface PatchMetadata {
  */
 export class Emulator {
   public baseAddress: number;
+  public isAutoPatchingEnabled = true;
+  public processId: number;
+
   private processReadWrite: ProcessReadWrite;
 
   private state = EmulatorState.NOT_CONNECTED;
   private emulatorVersion: '1.6' | '2.2MM';
+
+  private subscriptions: {
+    /** VI timer */
+    time?: Subscription;
+  } = {};
 
   public getState(): EmulatorState {
     return this.state;
@@ -58,13 +68,15 @@ export class Emulator {
    *
    * @param {number} processId - Process ID to load
    */
-  constructor(processId: number) {
+  constructor(processId: number, isAutoPatchingEnabled: boolean) {
     this.state = EmulatorState.CONNECTING;
     console.log('Emulator constructor called with processId:', processId);
     try {
       memoryjs.openProcess(processId);
+      this.processId = processId;
     } catch (error) {
       console.log('error opening process with id', processId);
+      throw error;
     }
     const processObject = memoryjs.openProcess(processId);
     console.log('Process loaded successfully');
@@ -92,20 +104,48 @@ export class Emulator {
       throw new Error('Could not find base address');
     }
 
-    switch (processObject.modBaseAddr) {
-      case 4194304:
-        this.emulatorVersion = '1.6';
-        break;
-      case 9175040:
-        this.emulatorVersion = '2.2MM';
-        break;
+    if (processObject.modBaseAddr === 4194304) {
+      this.emulatorVersion = '1.6';
+    } else if (this.baseAddress === 0x52b40000) {
+      this.emulatorVersion = '2.2MM';
     }
     console.log('Detected PJ64 version', this.emulatorVersion);
+
+    this.isAutoPatchingEnabled = isAutoPatchingEnabled;
+    this.subscriptions.time = MemoryWatcher.watchBytes(
+      processObject.handle,
+      this.baseAddress + 0x32d580,
+      4
+    ).subscribe((value) => {
+      const frameCount = value.readUInt32LE(0);
+      if (frameCount < 10) {
+        this.state = EmulatorState.CONNECTED;
+      }
+      if (
+        this.isAutoPatchingEnabled &&
+        frameCount >= 210 &&
+        frameCount < 300 &&
+        this.state === EmulatorState.CONNECTED
+      ) {
+        this.patchMemory();
+      }
+    });
 
     this.changeCharacter(0);
     this.reset();
 
     this.state = EmulatorState.CONNECTED;
+  }
+
+  /**
+   * Unsubscribe all subscriptions, and release other resources.
+   */
+  public destroy(): void {
+    Object.values(this.subscriptions).forEach((subscription) => {
+      if (!!subscription) {
+        subscription.unsubscribe();
+      }
+    });
   }
 
   public reset(): void {
@@ -118,7 +158,7 @@ export class Emulator {
     }
   }
 
-  public setConnectionFlag(connectionFlag): void {
+  public setConnectionFlag(connectionFlag: number): void {
     // required for net64 patch compatibility
     const tokenBuffer = Buffer.allocUnsafe(1);
     tokenBuffer.writeUInt8(connectionFlag, 0);
