@@ -117,10 +117,16 @@ export class Emulator {
       this.baseAddress + 0x32d580,
       4
     ).subscribe((value) => {
-      if (value.readUInt32LE(0) < 10) {
+      const frameCount = value.readUInt32LE(0);
+      if (frameCount < 10) {
         this.state = EmulatorState.CONNECTED;
       }
-      if (this.isAutoPatchingEnabled && value.readUInt32LE(0) < 300 && this.state === EmulatorState.CONNECTED) {
+      if (
+        this.isAutoPatchingEnabled &&
+        frameCount >= 210 &&
+        frameCount < 300 &&
+        this.state === EmulatorState.CONNECTED
+      ) {
         this.patchMemory();
       }
     });
