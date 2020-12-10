@@ -42,18 +42,28 @@ export const oAuthManager = new OAuthManager(
   settingsManager.get('oauth/tokenSaveStatus') ? settingsManager.get('oAuthTokenPath') as string : undefined
 );
 
+// set socket reference
+import * as WebSocket from 'ws';
+let twitchSocket: WebSocket | undefined;
+export function setTwitchSocket(value: WebSocket | undefined): void {
+  twitchSocket = value;
+}
+export function getTwitchSocket(): WebSocket | undefined {
+  return twitchSocket;
+}
+
 // set emulator reference
 import { Emulator } from 'server/Emulator';
 let emulator: Emulator | undefined;
 export async function setEmulator(value: Emulator | undefined): Promise<void> {
   // destroy old emulator
-  if (!!emulator) {
+  if (emulator) {
     emulator.destroy();
   }
   // set new emulator value
   emulator = value;
   // if new emulator exists
-  if (!!emulator) {
+  if (emulator) {
     const currentEmulator = emulator;
     const checkProcessDiedInterval = setInterval(() => {
       if (!isProcessAlive(currentEmulator.processId)) {
@@ -64,7 +74,7 @@ export async function setEmulator(value: Emulator | undefined): Promise<void> {
       }
     }, 100);
 
-    if (!!twitchSocket) {
+    if (twitchSocket) {
       // if twitch socket is open, bind it to the new emulator
       TwitchManager.setEmulator(
         twitchSocket,
@@ -77,16 +87,6 @@ export async function setEmulator(value: Emulator | undefined): Promise<void> {
 }
 export function getEmulator(): Emulator | undefined {
   return emulator;
-}
-
-// set socket reference
-import * as WebSocket from 'ws';
-let twitchSocket: WebSocket | undefined;
-export function setTwitchSocket(value: WebSocket | undefined): void {
-  twitchSocket = value;
-}
-export function getTwitchSocket(): WebSocket | undefined {
-  return twitchSocket;
 }
 
 // spawn client
