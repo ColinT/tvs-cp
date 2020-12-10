@@ -24,7 +24,7 @@ router.post('/process-id', async (req, res) => {
     const processId = parseInt(req.body, 10);
     if (isProcessAlive(processId)) {
       const emulator = new Emulator(parseInt(req.body, 10), settingsManager.getBoolean(PATH_IS_AUTO_PATCHING_ENABLED));
-      setEmulator(emulator);
+      await setEmulator(emulator);
       res.status(200).send({
         baseAddress: emulator.baseAddress,
       });
