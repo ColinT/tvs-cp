@@ -33,20 +33,30 @@ export class ChannelPointsWebSocket {
     });
 
     wss.on('message', (data) => {
-      if (typeof data === 'string') {
-        const res = JSON.parse(data);
-
-        if (res.type === 'MESSAGE' && res.data.topic === `channel-points-channel-v1.${channelId}`) {
-          onMessage(JSON.parse(res.data.message));
-        }
-
-        if (res.type === 'RECONNECT') {
-          onReconnect();
-          wss.close();
-        }
-      }
+      this.handleMessage(wss, data, channelId, onMessage, onReconnect);
     });
 
     return wss;
+  }
+
+  public static handleMessage(
+    websocket: WebSocket,
+    message: WebSocket.Data,
+    channelId: string,
+    onMessage: (message: string) => void,
+    onReconnect: () => void
+  ): void {
+    if (typeof message === 'string') {
+      const res = JSON.parse(message);
+
+      if (res.type === 'MESSAGE' && res.data.topic === `channel-points-channel-v1.${channelId}`) {
+        onMessage(JSON.parse(res.data.message));
+      }
+
+      if (res.type === 'RECONNECT') {
+        onReconnect();
+        websocket.close();
+      }
+    }
   }
 }
