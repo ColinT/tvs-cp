@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { Process } from 'common/types/Process';
+import type { Process } from 'memoryjs';
 import { EmulatorState } from 'common/states/EmulatorState';
 
 import { baseUrl } from 'client/config';

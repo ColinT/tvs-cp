@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { Process } from 'common/types/Process';
+import type { ListedProcess } from 'memoryjs';
 import { EmulatorState } from 'common/states/EmulatorState';
 import { MemoryWatcher } from './MemoryWatcher';
 
@@ -53,9 +53,9 @@ export class Emulator {
    * 
    * @param {RegExp} [processName] - Filter the results with a regular expression.
    */
-  public static getAllProcesses(processName?: RegExp): Process[] {
+  public static getAllProcesses(processName?: RegExp): ListedProcess[] {
     if (processName) {
-      return memoryjs.getProcesses().filter((process: Process) => {
+      return memoryjs.getProcesses().filter((process) => {
         return process.szExeFile.match(processName);
       });
     } else {
@@ -142,7 +142,7 @@ export class Emulator {
    */
   public destroy(): void {
     Object.values(this.subscriptions).forEach((subscription) => {
-      if (!!subscription) {
+      if (subscription) {
         subscription.unsubscribe();
       }
     });
