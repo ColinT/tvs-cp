@@ -50,6 +50,29 @@ export class TwitchManager {
     );
   }
 
+  public static setEmulator(
+    websocket: WebSocket,
+    emulator: Emulator,
+    channelId: string,
+    oAuthManager: OAuthManager
+  ): void {
+    // remove old listener
+    websocket.removeAllListeners('message');
+    // set new listener
+    websocket.on('message', (data) =>
+      ChannelPointsWebSocket.handleMessage(
+        websocket,
+        data,
+        channelId,
+        (message) => this.handleRedemption(message, emulator),
+        () => {
+          console.log('Twitch server requested websocket reconnect. Automatically reconnecting...');
+          this.generateGlobalWebSocket(channelId, oAuthManager, emulator);
+        }
+      )
+    );
+  }
+
   private static handleRedemption(redemptionData, emulator: Emulator): void {
     const command: string = redemptionData.data.redemption.reward.title.toLowerCase();
     const userInput: string = redemptionData.data.redemption.user_input;

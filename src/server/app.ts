@@ -22,6 +22,7 @@ server.listen(0, () => {
 });
 
 import { isProcessAlive } from './utils';
+import { TwitchManager } from './TwitchManager';
 
 // Direct all api calls to the api
 import api from 'server/api/api';
@@ -44,7 +45,7 @@ export const oAuthManager = new OAuthManager(
 // set emulator reference
 import { Emulator } from 'server/Emulator';
 let emulator: Emulator | undefined;
-export function setEmulator(value: Emulator | undefined): void {
+export async function setEmulator(value: Emulator | undefined): Promise<void> {
   // destroy old emulator
   if (!!emulator) {
     emulator.destroy();
@@ -62,6 +63,16 @@ export function setEmulator(value: Emulator | undefined): void {
         clearInterval(checkProcessDiedInterval);
       }
     }, 100);
+
+    if (!!twitchSocket) {
+      // if twitch socket is open, bind it to the new emulator
+      TwitchManager.setEmulator(
+        twitchSocket,
+        currentEmulator,
+        await TwitchManager.getChannelId(oAuthManager),
+        oAuthManager
+      );
+    }
   }
 }
 export function getEmulator(): Emulator | undefined {
