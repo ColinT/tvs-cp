@@ -19,7 +19,7 @@ declare module 'memoryjs' {
   }
 
   /**
-   * @typedef {Object} Process - A opened memoryjs Process object
+   * @typedef {Object} Process - An opened memoryjs Process object
    * @see https://github.com/Rob--/memoryjs#process-object
    * @see https://docs.microsoft.com/en-us/windows/win32/api/tlhelp32/ns-tlhelp32-processentry32
    */
