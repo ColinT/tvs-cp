@@ -39,4 +39,21 @@ router.get('/socket-status', async (_req, res) => {
   }
 });
 
+router.post('/execute-command', async (req, res) => {
+  try {
+    const emulator = getEmulator();
+    if (!emulator) {
+      res.status(400).send('Emulator not connected');
+    } else if (emulator.getState() !== EmulatorState.PATCHED) {
+      res.status(400).send('Emulator not patched');
+    } else {
+      TwitchManager.executeCommand(emulator, req.body.command, req.body.userInput);
+      res.status(200).send();
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send();
+  }
+});
+
 export default router;
