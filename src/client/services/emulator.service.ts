@@ -12,7 +12,7 @@ import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 export class EmulatorService {
   constructor(private http: HttpClient) {}
 
-  getEmulatorState$(pollingInterval: number = 1000): Observable<EmulatorState> {
+  getEmulatorState$(pollingInterval = 1000): Observable<EmulatorState> {
     return timer(0, pollingInterval).pipe(
       switchMap(() => this.http.get(`${baseUrl}/api/emulator/status`, { responseType: 'text' })),
       map((response) => response as EmulatorState),
@@ -20,7 +20,7 @@ export class EmulatorService {
     );
   }
 
-  getEmulatorVersion$(pollingInterval: number = 1000): Observable<EmulatorVersion | undefined> {
+  getEmulatorVersion$(pollingInterval = 1000): Observable<EmulatorVersion | undefined> {
     return this.getEmulatorState$(pollingInterval).pipe(
       switchMap((emulatorState) => {
         if (emulatorState !== EmulatorState.NOT_CONNECTED) {

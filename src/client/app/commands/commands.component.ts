@@ -47,8 +47,8 @@ export class CommandsComponent {
       commands: [
         {
           name: '!bird',
-          description: "Bird's eye view camera",
-          content: "Puts the camera into bird's eye view temporarily.",
+          description: 'Bird\'s eye view camera',
+          content: 'Puts the camera into bird\'s eye view temporarily.',
           type: 'basic',
         },
         {
@@ -130,7 +130,7 @@ export class CommandsComponent {
         {
           name: '!gravity',
           description: 'Lowers all jumps',
-          content: "Tmporarily reduces all forms of Mario's vertical speeds, which reduces jump height.",
+          content: 'Tmporarily reduces all forms of Mario\'s vertical speeds, which reduces jump height.',
           type: 'basic',
         },
         {
@@ -214,7 +214,7 @@ export class CommandsComponent {
         {
           name: '!turn',
           description: 'Turns Mario around',
-          content: "Instantly changes Mario's angle by 180 degrees.",
+          content: 'Instantly changes Mario\'s angle by 180 degrees.',
           type: 'basic',
         },
         {

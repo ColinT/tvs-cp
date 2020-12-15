@@ -88,11 +88,12 @@ export class TwitchManager {
             const id = this.getCharacterIdFromName(userInput);
             console.log('Changing to character id:', id);
             emulator.changeCharacter(id);
-            break;
           }
+          break;
         }
         default: {
           emulator.doEffect(`${command}${userInput ? ` ${userInput}` : ''}`);
+          break;
         }
       }
     }
