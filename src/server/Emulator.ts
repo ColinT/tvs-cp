@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import type { ListedProcess } from 'memoryjs';
-import { EmulatorState } from 'common/states/EmulatorState';
+import { EmulatorState, EmulatorVersion } from 'common/states/EmulatorState';
 import { MemoryWatcher } from './MemoryWatcher';
 
 export const patchesRoot = './patches';
@@ -33,11 +33,11 @@ export class Emulator {
   public baseAddress: number;
   public isAutoPatchingEnabled = true;
   public processId: number;
+  public emulatorVersion: EmulatorVersion;
 
   private processReadWrite: ProcessReadWrite;
 
   private state = EmulatorState.NOT_CONNECTED;
-  private emulatorVersion: '1.6' | '2.2MM';
 
   private subscriptions: {
     /** VI timer */
@@ -105,9 +105,9 @@ export class Emulator {
     }
 
     if (processObject.modBaseAddr === 4194304) {
-      this.emulatorVersion = '1.6';
+      this.emulatorVersion = EmulatorVersion.VERSION_1_6;
     } else if (this.baseAddress === 0x52b40000) {
-      this.emulatorVersion = '2.2MM';
+      this.emulatorVersion = EmulatorVersion.VERSION_2_2_MM;
     }
     console.log('Detected PJ64 version', this.emulatorVersion);
 
