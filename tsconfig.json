@@ -10,7 +10,8 @@
       "server/*": ["./src/server/*"]
     },
     "typeRoots": [
-      "node_modules/@types"
+      "node_modules/@types",
+      "src/common/types"
     ],
     "plugins": [
       { "transform": "typescript-transform-paths" }

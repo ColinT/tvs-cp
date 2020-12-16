@@ -4,8 +4,8 @@ import { Subscription } from 'rxjs';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { Process } from 'common/types/Process';
-import { EmulatorState } from 'common/states/EmulatorState';
+import type { ListedProcess } from 'memoryjs';
+import { EmulatorState, EmulatorVersion } from 'common/states/EmulatorState';
 import { MemoryWatcher } from './MemoryWatcher';
 
 export const patchesRoot = './patches';
@@ -33,11 +33,11 @@ export class Emulator {
   public baseAddress: number;
   public isAutoPatchingEnabled = true;
   public processId: number;
+  public emulatorVersion: EmulatorVersion;
 
   private processReadWrite: ProcessReadWrite;
 
   private state = EmulatorState.NOT_CONNECTED;
-  private emulatorVersion: '1.6' | '2.2MM';
 
   private subscriptions: {
     /** VI timer */
@@ -53,9 +53,9 @@ export class Emulator {
    * 
    * @param {RegExp} [processName] - Filter the results with a regular expression.
    */
-  public static getAllProcesses(processName?: RegExp): Process[] {
+  public static getAllProcesses(processName?: RegExp): ListedProcess[] {
     if (processName) {
-      return memoryjs.getProcesses().filter((process: Process) => {
+      return memoryjs.getProcesses().filter((process) => {
         return process.szExeFile.match(processName);
       });
     } else {
@@ -105,9 +105,9 @@ export class Emulator {
     }
 
     if (processObject.modBaseAddr === 4194304) {
-      this.emulatorVersion = '1.6';
+      this.emulatorVersion = EmulatorVersion.VERSION_1_6;
     } else if (this.baseAddress === 0x52b40000) {
-      this.emulatorVersion = '2.2MM';
+      this.emulatorVersion = EmulatorVersion.VERSION_2_2_MM;
     }
     console.log('Detected PJ64 version', this.emulatorVersion);
 
@@ -142,7 +142,7 @@ export class Emulator {
    */
   public destroy(): void {
     Object.values(this.subscriptions).forEach((subscription) => {
-      if (!!subscription) {
+      if (subscription) {
         subscription.unsubscribe();
       }
     });

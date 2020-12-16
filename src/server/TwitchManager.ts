@@ -76,23 +76,32 @@ export class TwitchManager {
   private static handleRedemption(redemptionData, emulator: Emulator): void {
     const command: string = redemptionData.data.redemption.reward.title.toLowerCase();
     const userInput: string = redemptionData.data.redemption.user_input;
+    TwitchManager.executeCommand(emulator, command, userInput);
+  }
+
+  public static executeCommand(emulator: Emulator, command: string, userInput?: string): void {
     console.log('Executing command: ' + command);
     if (command.charAt(0) === '!') {
       switch (command) {
         case '!changecharacter': {
-          const id = this.getCharacterIdFromName(userInput);
-          console.log('Changing to character id:', id);
-          emulator.changeCharacter(id);
+          if (userInput) {
+            const id = this.getCharacterIdFromName(userInput);
+            console.log('Changing to character id:', id);
+            emulator.changeCharacter(id);
+          }
           break;
         }
         default: {
           emulator.doEffect(`${command}${userInput ? ` ${userInput}` : ''}`);
+          break;
         }
       }
     }
   }
 
   private static getCharacterIdFromName(query: string): number {
+    // Force lowercase for case-insensitivity
+    query = query.toLowerCase();
     // Return the closest character id based on levenshtein distance
     const characterEntries = Object.entries(this.characterDict);
     // Set initial condition

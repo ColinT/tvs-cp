@@ -62,7 +62,7 @@ router.post('/patch', async (_req, res) => {
 router.get('/is-auto-patching-enabled', async (_req, res) => {
   try {
     const emulator = getEmulator();
-    if (!!emulator) {
+    if (emulator) {
       res.status(200).send(emulator.isAutoPatchingEnabled);
       settingsManager.set(PATH_IS_AUTO_PATCHING_ENABLED, emulator.isAutoPatchingEnabled);
     } else {
@@ -80,7 +80,7 @@ router.post('/is-auto-patching-enabled', async (req, res) => {
     const isAutoPatchingEnabled = req.body === 'true';
     console.log(isAutoPatchingEnabled);
     const emulator = getEmulator();
-    if (!!emulator) {
+    if (emulator) {
       emulator.isAutoPatchingEnabled = isAutoPatchingEnabled;
     }
     settingsManager.set(PATH_IS_AUTO_PATCHING_ENABLED, isAutoPatchingEnabled);
@@ -97,6 +97,20 @@ router.get('/status', async (_req, res) => {
       res.status(200).send(EmulatorState.NOT_CONNECTED);
     } else {
       res.status(200).send(emulator.getState());
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send();
+  }
+});
+
+router.get('/version', async (_req, res) => {
+  try {
+    const emulator = getEmulator();
+    if (!emulator) {
+      res.status(400).send('Emulator not connected');
+    } else {
+      res.status(200).send(emulator.emulatorVersion);
     }
   } catch (error) {
     console.error(error);

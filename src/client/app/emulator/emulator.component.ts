@@ -2,11 +2,13 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { Process } from 'common/types/Process';
+import type { Process } from 'memoryjs';
 import { EmulatorState } from 'common/states/EmulatorState';
 
 import { baseUrl } from 'client/config';
 import { coerceBoolean } from 'server/utils';
+import { EmulatorService } from 'client/services/emulator.service';
+import { take } from 'rxjs/operators';
 
 enum EmulatorListState {
   LOADING = 1,
@@ -31,7 +33,7 @@ export class EmulatorComponent implements OnInit, OnDestroy {
 
   private checkEmulatorStatusInterval: NodeJS.Timeout;
 
-  constructor(private http: HttpClient, private snackBar: MatSnackBar) {}
+  constructor(private http: HttpClient, private snackBar: MatSnackBar, private emulatorService: EmulatorService) {}
 
   ngOnInit(): void {
     this.getEmulatorList();
@@ -62,15 +64,11 @@ export class EmulatorComponent implements OnInit, OnDestroy {
   }
 
   async getEmulatorStatus(): Promise<void> {
-    return this.http
-      .get(`${baseUrl}/api/emulator/status`, { responseType: 'text' })
-      .toPromise()
-      .then((response) => {
-        this.emulatorState = response as EmulatorState;
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    try {
+      this.emulatorState = await this.emulatorService.getEmulatorState$().pipe(take(1)).toPromise();
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async setEmulator(process: Process): Promise<void> {

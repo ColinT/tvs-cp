@@ -1,0 +1,97 @@
+<div class="container overflow-auto">
+  <h1 class="display-4">
+    Commands List
+  </h1>
+  <div>
+    <p>
+      A list of available commands with descriptions. If you patched your emulator you
+      can also test out the commands here.
+    </p>
+  </div>
+
+  <ng-container *ngIf="emulatorState$ | async as emulatorState">
+
+    <mat-expansion-panel *ngFor="let patch of patches" expanded="true">
+
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{ patch.title }}
+        </mat-panel-title>
+        <mat-panel-description>
+          {{ patch.description }}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <mat-accordion multi="true">
+        <ng-container *ngIf="{
+          disabled: patch.disabled$ | async
+        } as patchStatus">
+          
+          <mat-expansion-panel *ngFor="let command of patch.commands">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{ command.name }}
+              </mat-panel-title>
+              <mat-panel-description>
+                {{ command.description }}
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+  
+            <div>
+              <p>{{ command.content }}</p>
+            </div>
+  
+            <ng-container [ngSwitch]="command.type">
+              <ng-container *ngSwitchCase="'basic'">
+                <div class="d-flex justify-content-end">
+                  <button
+                    mat-raised-button
+                    color="accent"
+                    [disabled]="
+                      emulatorState !== EmulatorState.PATCHED ||
+                      patchStatus.disabled
+                    "
+                    (click)="testCommand(command.name)"
+                  >
+                    Test
+                  </button>
+                </div>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'userInput'">
+                <div class="d-flex align-items-center">
+                  <mat-form-field class="flex-fill" color="accent">
+                    <input #userInput matInput placeholder="User Input" required
+                      [disabled]="
+                        emulatorState !== EmulatorState.PATCHED ||
+                        patchStatus.disabled
+                      "
+                    >
+                    <mat-error>Required</mat-error>
+                  </mat-form-field>
+                  <div class="px-1"><!-- spacer --></div>
+                  <button
+                    mat-raised-button
+                    color="accent"
+                    [disabled]="
+                      emulatorState !== EmulatorState.PATCHED ||
+                      userInput.value.length === 0 ||
+                      patchStatus.disabled
+                    "
+                    (click)="testCommand(command.name, userInput.value)"
+                  >
+                    Test
+                  </button>
+                </div>
+              </ng-container>
+            </ng-container>
+          </mat-expansion-panel>
+        
+        </ng-container>
+      </mat-accordion>
+
+    </mat-expansion-panel>
+
+  </ng-container>
+
+</div>

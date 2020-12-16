@@ -1,0 +1,15 @@
+@use '../../theme' as theme;
+$primary: map-get(theme.$tvs-app-primary, 'default');
+
+mat-panel-title {
+  flex: 1 1 0;
+}
+
+mat-panel-description {
+  flex: 2 1 0;
+}
+
+mat-accordion mat-expansion-panel.mat-expanded {
+  border: 1px solid rgba($primary, 0.8);
+  box-shadow: 0px 3px 1px -1px rgba($primary, 0.2), 0px 2px 2px 1px rgba($primary, 0.14), 0px 1px 5px 1px rgba($primary, 0.12);
+}
