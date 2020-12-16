@@ -8,6 +8,7 @@ import { setEmulator, getEmulator, settingsManager } from 'server/app';
 import { isProcessAlive } from 'server/utils';
 
 const PATH_IS_AUTO_PATCHING_ENABLED = 'emulator/isAutoPatchingEnabled';
+const PATH_IS_RESTORING_FILE_A_FLAGS_ENABLED = 'emulator/isRestoringFileAFlagsEnabled';
 
 router.get('/list', async (_req, res) => {
   try {
@@ -25,6 +26,7 @@ router.post('/process-id', async (req, res) => {
     if (isProcessAlive(processId)) {
       const emulator = new Emulator(parseInt(req.body, 10), settingsManager.getBoolean(PATH_IS_AUTO_PATCHING_ENABLED));
       await setEmulator(emulator);
+      emulator.isRestoringFileAFlagsEnabled = settingsManager.getBoolean(PATH_IS_RESTORING_FILE_A_FLAGS_ENABLED);
       res.status(200).send({
         baseAddress: emulator.baseAddress,
       });
@@ -78,12 +80,40 @@ router.post('/is-auto-patching-enabled', async (req, res) => {
   try {
     console.log(req.body);
     const isAutoPatchingEnabled = req.body === 'true';
-    console.log(isAutoPatchingEnabled);
     const emulator = getEmulator();
     if (emulator) {
       emulator.isAutoPatchingEnabled = isAutoPatchingEnabled;
     }
     settingsManager.set(PATH_IS_AUTO_PATCHING_ENABLED, isAutoPatchingEnabled);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send();
+  }
+});
+
+router.get('/is-restoring-file-a-flags-enabled', async (_req, res) => {
+  try {
+    const emulator = getEmulator();
+    if (emulator) {
+      res.status(200).send(emulator.isRestoringFileAFlagsEnabled);
+      settingsManager.set(PATH_IS_RESTORING_FILE_A_FLAGS_ENABLED, emulator.isRestoringFileAFlagsEnabled);
+    } else {
+      res.status(200).send(settingsManager.getBoolean(PATH_IS_RESTORING_FILE_A_FLAGS_ENABLED));
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send();
+  }
+});
+
+router.post('/is-restoring-file-a-flags-enabled', async (req, res) => {
+  try {
+    const isRestoringFileAFlagsEnabled = req.body === 'true';
+    const emulator = getEmulator();
+    if (emulator) {
+      emulator.isRestoringFileAFlagsEnabled = isRestoringFileAFlagsEnabled;
+    }
+    settingsManager.set(PATH_IS_RESTORING_FILE_A_FLAGS_ENABLED, isRestoringFileAFlagsEnabled);
   } catch (error) {
     console.error(error);
     res.status(500).send();

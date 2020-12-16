@@ -30,6 +30,7 @@ export class EmulatorComponent implements OnInit, OnDestroy {
   public emulatorList: Process[] = [];
 
   public isAutoPatchingEnabled: boolean;
+  public isRestoringFileAFlagsEnabled: boolean;
 
   private checkEmulatorStatusInterval: NodeJS.Timeout;
 
@@ -39,6 +40,7 @@ export class EmulatorComponent implements OnInit, OnDestroy {
     this.getEmulatorList();
     this.getEmulatorStatus();
     this.getIsAutoPatchingEnabled();
+    this.getIsRestoringFileAFlagsEnabled();
 
     this.checkEmulatorStatusInterval = setInterval(() => {
       this.getEmulatorStatus();
@@ -137,6 +139,32 @@ export class EmulatorComponent implements OnInit, OnDestroy {
       .toPromise()
       .then(() => {
         this.isAutoPatchingEnabled = value;
+      })
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
+  }
+
+  async getIsRestoringFileAFlagsEnabled(): Promise<void> {
+    return this.http
+      .get(`${baseUrl}/api/emulator/is-restoring-file-a-flags-enabled`)
+      .toPromise()
+      .then((response: string | boolean) => {
+        this.isRestoringFileAFlagsEnabled = coerceBoolean(response);
+      })
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
+  }
+
+  async setIsRestoringFileAFlagsEnabled(value: boolean): Promise<void> {
+    this.http
+      .post(`${baseUrl}/api/emulator/is-restoring-file-a-flags-enabled`, value)
+      .toPromise()
+      .then(() => {
+        this.isRestoringFileAFlagsEnabled = value;
       })
       .catch((error) => {
         console.error(error);

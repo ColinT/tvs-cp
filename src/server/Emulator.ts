@@ -32,6 +32,7 @@ interface PatchMetadata {
 export class Emulator {
   public baseAddress: number;
   public isAutoPatchingEnabled = true;
+  public isRestoringFileAFlagsEnabled = false;
   public processId: number;
   public emulatorVersion: EmulatorVersion;
 
@@ -42,6 +43,8 @@ export class Emulator {
   private subscriptions: {
     /** VI timer */
     time?: Subscription;
+    /** File A flags */
+    fileAFlags?: Subscription;
   } = {};
 
   public getState(): EmulatorState {
@@ -116,8 +119,8 @@ export class Emulator {
       processObject.handle,
       this.baseAddress + 0x32d580,
       4
-    ).subscribe((value) => {
-      const frameCount = value.readUInt32LE(0);
+    ).subscribe(({ currentValue }) => {
+      const frameCount = currentValue.readUInt32LE(0);
       if (frameCount < 10) {
         this.state = EmulatorState.CONNECTED;
       }
@@ -128,6 +131,16 @@ export class Emulator {
         this.state === EmulatorState.CONNECTED
       ) {
         this.patchMemory();
+      }
+    });
+
+    this.subscriptions.fileAFlags = MemoryWatcher.watchBytes(
+      processObject.handle,
+      this.baseAddress + 0x207700,
+      112
+    ).subscribe(({ oldValue, currentValue }) => {
+      if (currentValue < oldValue && this.isRestoringFileAFlagsEnabled) {
+        this.writeMemory(0x207700, oldValue); // Restore old value if progress was lost
       }
     });
 
