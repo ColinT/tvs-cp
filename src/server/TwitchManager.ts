@@ -100,6 +100,8 @@ export class TwitchManager {
   }
 
   private static getCharacterIdFromName(query: string): number {
+    // Force lowercase for case-insensitivity
+    query = query.toLowerCase();
     // Return the closest character id based on levenshtein distance
     const characterEntries = Object.entries(this.characterDict);
     // Set initial condition
