@@ -79,7 +79,7 @@ export class CommandsComponent {
           description: 'Starts a countdown that kills Mario',
           content: `
             Starts (or restarts) a 60 second countdown that will void Mario out at the end.
-            There is a GS code that will cancel the countdown when you get a star or key.
+            The countdown will cancel when you get a star or key.
           `,
           type: 'basic',
         },
@@ -231,11 +231,8 @@ export class CommandsComponent {
         },
         {
           name: '!wallbonk',
-          description: '???',
-          content: `
-            I am not sure what this command does, but it comes in the original TvS. Let me know if
-            you figure it out, and I will document it!
-          `,
+          description: 'Prevents wallkicking',
+          content: 'Temporarily prevents wallkicking and causes Mario to bonk instead.',
           type: 'basic',
         },
         {
