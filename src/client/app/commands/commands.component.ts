@@ -231,11 +231,8 @@ export class CommandsComponent {
         },
         {
           name: '!wallbonk',
-          description: '???',
-          content: `
-            I am not sure what this command does, but it comes in the original TvS. Let me know if
-            you figure it out, and I will document it!
-          `,
+          description: 'Prevents wallkicking',
+          content: 'Temporarily prevents wallkicking and causes Mario to bonk instead.',
           type: 'basic',
         },
         {
