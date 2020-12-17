@@ -232,7 +232,9 @@ export class CommandsComponent {
         {
           name: '!wallbonk',
           description: 'Prevents wallkicking',
-          content: 'Temporarily prevents wallkicking and causes Mario to bonk instead.',
+          content: `
+            Temporarily prevents wallkicking (except firsties) and causes Mario to bonk instead.
+          `,
           type: 'basic',
         },
         {
