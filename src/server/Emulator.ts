@@ -45,6 +45,8 @@ export class Emulator {
     time?: Subscription;
     /** File A flags */
     fileAFlags?: Subscription;
+    /** Implementation of the death timer GS code */
+    deathTimerFix?: Subscription;
   } = {};
 
   public getState(): EmulatorState {
@@ -141,6 +143,23 @@ export class Emulator {
     ).subscribe(({ oldValue, currentValue }) => {
       if (currentValue < oldValue && this.isRestoringFileAFlagsEnabled) {
         this.writeMemory(0x207700, oldValue); // Restore old value if progress was lost
+      }
+    });
+
+    this.subscriptions.deathTimerFix = MemoryWatcher.watchBytes(
+      processObject.handle,
+      this.baseAddress + 0x33b17c,
+      2,
+    ).subscribe(({ currentValue }) => {
+      const actionId = currentValue.readUInt16LE(0);
+      if (
+        actionId === 0x1302 || // action star dance with exit
+        actionId === 0x1303 || // action star dance underwater
+        actionId === 0x1307 || // action star dance no exit
+        actionId === 0x1904 || // action fall after star grab
+        actionId === 0x1909 // action grand star dance
+      ) {
+        this.writeMemory(0x36af28, Buffer.alloc(2));
       }
     });
 

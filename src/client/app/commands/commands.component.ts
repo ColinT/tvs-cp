@@ -79,7 +79,7 @@ export class CommandsComponent {
           description: 'Starts a countdown that kills Mario',
           content: `
             Starts (or restarts) a 60 second countdown that will void Mario out at the end.
-            There is a GS code that will cancel the countdown when you get a star or key.
+            The countdown will cancel when you get a star or key.
           `,
           type: 'basic',
         },
