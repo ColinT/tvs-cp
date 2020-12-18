@@ -7,6 +7,7 @@ import * as path from 'path';
 import type { ListedProcess } from 'memoryjs';
 import { EmulatorState, EmulatorVersion } from 'common/states/EmulatorState';
 import { MemoryWatcher } from './MemoryWatcher';
+import { SettingsManager } from './SettingsManager';
 
 export const patchesRoot = './patches';
 
@@ -39,6 +40,8 @@ export class Emulator {
   private processReadWrite: ProcessReadWrite;
 
   private state = EmulatorState.NOT_CONNECTED;
+  
+  private settingsManager: SettingsManager;
 
   private subscriptions: {
     /** VI timer */
@@ -73,7 +76,7 @@ export class Emulator {
    *
    * @param {number} processId - Process ID to load
    */
-  constructor(processId: number, isAutoPatchingEnabled: boolean) {
+  constructor(processId: number, settingsManager: SettingsManager) {
     this.state = EmulatorState.CONNECTING;
     console.log('Emulator constructor called with processId:', processId);
     try {
@@ -116,8 +119,11 @@ export class Emulator {
     }
     console.log('Detected PJ64 version', this.emulatorVersion);
 
-    this.isAutoPatchingEnabled = isAutoPatchingEnabled;
+    this.settingsManager = settingsManager;
+
+    this.isAutoPatchingEnabled = this.settingsManager.getBoolean(SettingsManager.PATH_IS_AUTO_PATCHING_ENABLED);
     this.subscriptions.time = MemoryWatcher.watchBytes(
+      processId,
       processObject.handle,
       this.baseAddress + 0x32d580,
       4
@@ -126,27 +132,44 @@ export class Emulator {
       if (frameCount < 10) {
         this.state = EmulatorState.CONNECTED;
       }
-      if (
-        this.isAutoPatchingEnabled &&
-        frameCount >= 210 &&
-        frameCount < 300 &&
-        this.state === EmulatorState.CONNECTED
-      ) {
-        this.patchMemory();
+
+      if (frameCount >= 210 && frameCount < 300) { // Wait until RAM injection is available
+        if (this.state === EmulatorState.CONNECTED) {
+          if (this.isAutoPatchingEnabled) {
+            this.patchMemory();
+          }
+          if (this.isRestoringFileAFlagsEnabled) {
+            this.restoreFlags();
+          }
+        }
       }
     });
 
     this.subscriptions.fileAFlags = MemoryWatcher.watchBytes(
+      processId,
       processObject.handle,
       this.baseAddress + 0x207700,
       112
     ).subscribe(({ oldValue, currentValue }) => {
-      if (currentValue < oldValue && this.isRestoringFileAFlagsEnabled) {
-        this.writeMemory(0x207700, oldValue); // Restore old value if progress was lost
+      if (this.isRestoringFileAFlagsEnabled) {
+        if (currentValue > oldValue) {
+          // Whenever progress is gained, save the flags into the settings file
+          const oldSaveFlagsBase64 = this.settingsManager.get(SettingsManager.PATH_FILE_A_FLAGS_B64);
+          if (oldSaveFlagsBase64) {
+            // If there are existing flags, first check if there is more progress in the current flags
+            const oldSaveFlags = Buffer.from(oldSaveFlagsBase64 as string, 'base64');
+            if (oldSaveFlags.compare(currentValue) < 0) {
+              this.settingsManager.set(SettingsManager.PATH_FILE_A_FLAGS_B64, currentValue.toString('base64'));
+            }
+          } else {
+            this.settingsManager.set(SettingsManager.PATH_FILE_A_FLAGS_B64, currentValue.toString('base64'));
+          }
+        }
       }
     });
 
     this.subscriptions.deathTimerFix = MemoryWatcher.watchBytes(
+      processId,
       processObject.handle,
       this.baseAddress + 0x33b17c,
       2,
@@ -178,6 +201,17 @@ export class Emulator {
         subscription.unsubscribe();
       }
     });
+  }
+
+  public restoreFlags(): void {
+    const savedFlagsBase64 = this.settingsManager.get(SettingsManager.PATH_FILE_A_FLAGS_B64);
+    let savedFlags: Buffer;
+    if (savedFlagsBase64) {
+      savedFlags = Buffer.from(savedFlagsBase64 as string, 'base64');
+    } else {
+      savedFlags = Buffer.alloc(112);
+    }
+    this.writeMemory(0x207700, savedFlags);
   }
 
   public reset(): void {

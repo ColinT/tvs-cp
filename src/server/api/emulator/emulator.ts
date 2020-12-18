@@ -6,9 +6,7 @@ import { EmulatorState } from 'common/states/EmulatorState';
 import { Emulator } from 'server/Emulator';
 import { setEmulator, getEmulator, settingsManager } from 'server/app';
 import { isProcessAlive } from 'server/utils';
-
-const PATH_IS_AUTO_PATCHING_ENABLED = 'emulator/isAutoPatchingEnabled';
-const PATH_IS_RESTORING_FILE_A_FLAGS_ENABLED = 'emulator/isRestoringFileAFlagsEnabled';
+import { SettingsManager } from 'server/SettingsManager';
 
 router.get('/list', async (_req, res) => {
   try {
@@ -24,9 +22,9 @@ router.post('/process-id', async (req, res) => {
   try {
     const processId = parseInt(req.body, 10);
     if (isProcessAlive(processId)) {
-      const emulator = new Emulator(parseInt(req.body, 10), settingsManager.getBoolean(PATH_IS_AUTO_PATCHING_ENABLED));
+      const emulator = new Emulator(parseInt(req.body, 10), settingsManager);
       await setEmulator(emulator);
-      emulator.isRestoringFileAFlagsEnabled = settingsManager.getBoolean(PATH_IS_RESTORING_FILE_A_FLAGS_ENABLED);
+      emulator.isRestoringFileAFlagsEnabled = settingsManager.getBoolean(SettingsManager.PATH_IS_RESTORING_FILE_A_FLAGS_ENABLED);
       res.status(200).send({
         baseAddress: emulator.baseAddress,
       });
@@ -66,9 +64,9 @@ router.get('/is-auto-patching-enabled', async (_req, res) => {
     const emulator = getEmulator();
     if (emulator) {
       res.status(200).send(emulator.isAutoPatchingEnabled);
-      settingsManager.set(PATH_IS_AUTO_PATCHING_ENABLED, emulator.isAutoPatchingEnabled);
+      settingsManager.set(SettingsManager.PATH_IS_AUTO_PATCHING_ENABLED, emulator.isAutoPatchingEnabled);
     } else {
-      res.status(200).send(settingsManager.getBoolean(PATH_IS_AUTO_PATCHING_ENABLED));
+      res.status(200).send(settingsManager.getBoolean(SettingsManager.PATH_IS_AUTO_PATCHING_ENABLED));
     }
   } catch (error) {
     console.error(error);
@@ -84,7 +82,7 @@ router.post('/is-auto-patching-enabled', async (req, res) => {
     if (emulator) {
       emulator.isAutoPatchingEnabled = isAutoPatchingEnabled;
     }
-    settingsManager.set(PATH_IS_AUTO_PATCHING_ENABLED, isAutoPatchingEnabled);
+    settingsManager.set(SettingsManager.PATH_IS_AUTO_PATCHING_ENABLED, isAutoPatchingEnabled);
   } catch (error) {
     console.error(error);
     res.status(500).send();
@@ -96,9 +94,9 @@ router.get('/is-restoring-file-a-flags-enabled', async (_req, res) => {
     const emulator = getEmulator();
     if (emulator) {
       res.status(200).send(emulator.isRestoringFileAFlagsEnabled);
-      settingsManager.set(PATH_IS_RESTORING_FILE_A_FLAGS_ENABLED, emulator.isRestoringFileAFlagsEnabled);
+      settingsManager.set(SettingsManager.PATH_IS_RESTORING_FILE_A_FLAGS_ENABLED, emulator.isRestoringFileAFlagsEnabled);
     } else {
-      res.status(200).send(settingsManager.getBoolean(PATH_IS_RESTORING_FILE_A_FLAGS_ENABLED));
+      res.status(200).send(settingsManager.getBoolean(SettingsManager.PATH_IS_RESTORING_FILE_A_FLAGS_ENABLED));
     }
   } catch (error) {
     console.error(error);
@@ -113,7 +111,7 @@ router.post('/is-restoring-file-a-flags-enabled', async (req, res) => {
     if (emulator) {
       emulator.isRestoringFileAFlagsEnabled = isRestoringFileAFlagsEnabled;
     }
-    settingsManager.set(PATH_IS_RESTORING_FILE_A_FLAGS_ENABLED, isRestoringFileAFlagsEnabled);
+    settingsManager.set(SettingsManager.PATH_IS_RESTORING_FILE_A_FLAGS_ENABLED, isRestoringFileAFlagsEnabled);
   } catch (error) {
     console.error(error);
     res.status(500).send();
@@ -142,6 +140,32 @@ router.get('/version', async (_req, res) => {
     } else {
       res.status(200).send(emulator.emulatorVersion);
     }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send();
+  }
+});
+
+router.post('/flags/fileA/restore', async (_req, res) => {
+  try {
+    const emulator = getEmulator();
+    if (!emulator) {
+      res.status(400).send('Emulator not connected');
+    } else {
+      emulator.restoreFlags();
+      console.log('restored flags');
+      res.status(204).send();
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send();
+  }
+});
+
+router.delete('/flags/fileA', async (_req, res) => {
+  try {
+    settingsManager.set(SettingsManager.PATH_FILE_A_FLAGS_B64, '');
+    res.status(204).send();
   } catch (error) {
     console.error(error);
     res.status(500).send();
