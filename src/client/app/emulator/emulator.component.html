@@ -18,9 +18,23 @@
           Automatically patch emulator on reset
         </mat-checkbox>
 
-        <mat-checkbox [checked]="isRestoringFileAFlagsEnabled" (change)="setIsRestoringFileAFlagsEnabled($event.checked)">
-          Restore file A flags (soft reset only)
-        </mat-checkbox>
+        <div class="d-flex align-items-center flex-wrap">
+          <mat-checkbox [checked]="isRestoringFileAFlagsEnabled" (change)="setIsRestoringFileAFlagsEnabled($event.checked)">
+            Restore file A flags on reset (via RAM injection)
+          </mat-checkbox>
+
+          <div class="ml-auto">
+            <button mat-raised-button
+              color="primary"
+              class="mx-1"
+              [disabled]="emulatorState === EmulatorState.NOT_CONNECTED || emulatorState === EmulatorState.CONNECTING"
+              (click)="handleRestoreFlags()"
+            >
+              Restore Now
+            </button>
+            <button mat-raised-button color="warn" (click)="handleClearSavedFlags()">Clear Saved Flags</button>
+          </div>
+        </div>
 
       </mat-list>
     </mat-card-content>

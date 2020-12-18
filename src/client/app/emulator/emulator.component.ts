@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 
 import type { Process } from 'memoryjs';
 import { EmulatorState } from 'common/states/EmulatorState';
@@ -9,6 +10,7 @@ import { baseUrl } from 'client/config';
 import { coerceBoolean } from 'server/utils';
 import { EmulatorService } from 'client/services/emulator.service';
 import { take } from 'rxjs/operators';
+import { ClearSavedFlagsDialogComponent } from './dialogs/clear-saved-flags-dialog/clear-saved-flags-dialog.component';
 
 enum EmulatorListState {
   LOADING = 1,
@@ -34,7 +36,12 @@ export class EmulatorComponent implements OnInit, OnDestroy {
 
   private checkEmulatorStatusInterval: NodeJS.Timeout;
 
-  constructor(private http: HttpClient, private snackBar: MatSnackBar, private emulatorService: EmulatorService) {}
+  constructor(
+    private http: HttpClient,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private emulatorService: EmulatorService
+  ) {}
 
   ngOnInit(): void {
     this.getEmulatorList();
@@ -170,5 +177,13 @@ export class EmulatorComponent implements OnInit, OnDestroy {
         console.error(error);
         throw error;
       });
+  }
+
+  async handleRestoreFlags(): Promise<void> {
+    await this.http.post(`${baseUrl}/api/emulator/flags/fileA/restore`, {}).pipe(take(1)).toPromise();
+  }
+
+  async handleClearSavedFlags(): Promise<void> {
+    await this.dialog.open(ClearSavedFlagsDialogComponent).afterClosed().toPromise();
   }
 }
