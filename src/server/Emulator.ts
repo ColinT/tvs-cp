@@ -34,6 +34,8 @@ export class Emulator {
   public baseAddress: number;
   public isAutoPatchingEnabled = true;
   public isRestoringFileAFlagsEnabled = false;
+  public isSkipIntroEnabled = true;
+
   public processId: number;
   public emulatorVersion: EmulatorVersion;
 
@@ -141,6 +143,10 @@ export class Emulator {
           if (this.isRestoringFileAFlagsEnabled) {
             this.restoreFlags();
           }
+          this.isSkipIntroEnabled = this.settingsManager.getBoolean(SettingsManager.PATH_IS_SKIP_INTRO_ENABLED);
+          if (this.isSkipIntroEnabled) {
+            this.setSkipIntroEnabled(this.isSkipIntroEnabled);
+          }
         }
       }
     });
@@ -212,6 +218,14 @@ export class Emulator {
       savedFlags = Buffer.alloc(112);
     }
     this.writeMemory(0x207700, savedFlags);
+  }
+
+  public setSkipIntroEnabled(value: boolean): void {
+    if (value) { // skip intro
+      this.writeMemory(0x24bbd6, Buffer.from([0x00, 0x24]));
+    } else { // watch intro
+      this.writeMemory(0x24bbd6, Buffer.from([0x40, 0x10]));
+    }
   }
 
   public reset(): void {

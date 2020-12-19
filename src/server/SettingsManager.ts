@@ -17,6 +17,7 @@ export class SettingsManager {
   public static readonly PATH_IS_AUTO_PATCHING_ENABLED = 'emulator/isAutoPatchingEnabled';
   public static readonly PATH_IS_RESTORING_FILE_A_FLAGS_ENABLED = 'emulator/isRestoringFileAFlagsEnabled';
   public static readonly PATH_FILE_A_FLAGS_B64 = 'emulator/fileAFlagsBase64';
+  public static readonly PATH_IS_SKIP_INTRO_ENABLED = 'emulator/isSkipIntroEnabled';
   // #endregion static paths
 
   /**

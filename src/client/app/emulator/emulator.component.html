@@ -14,6 +14,10 @@
     <mat-card-content>
       <mat-list class="d-flex flex-column">
 
+        <mat-checkbox [checked]="isSkipIntroEnabled" (change)="setIsSkipIntroEnabled($event.checked)">
+          Skip intro
+        </mat-checkbox>
+
         <mat-checkbox [checked]="isAutoPatchingEnabled" (change)="setIsAutoPatchingEnabled($event.checked)">
           Automatically patch emulator on reset
         </mat-checkbox>
@@ -25,7 +29,7 @@
 
           <div class="ml-auto">
             <button mat-raised-button
-              color="primary"
+              color="accent"
               class="mx-1"
               [disabled]="emulatorState === EmulatorState.NOT_CONNECTED || emulatorState === EmulatorState.CONNECTING"
               (click)="handleRestoreFlags()"

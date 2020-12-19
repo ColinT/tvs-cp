@@ -83,6 +83,7 @@ router.post('/is-auto-patching-enabled', async (req, res) => {
       emulator.isAutoPatchingEnabled = isAutoPatchingEnabled;
     }
     settingsManager.set(SettingsManager.PATH_IS_AUTO_PATCHING_ENABLED, isAutoPatchingEnabled);
+    res.status(204).send();
   } catch (error) {
     console.error(error);
     res.status(500).send();
@@ -112,6 +113,38 @@ router.post('/is-restoring-file-a-flags-enabled', async (req, res) => {
       emulator.isRestoringFileAFlagsEnabled = isRestoringFileAFlagsEnabled;
     }
     settingsManager.set(SettingsManager.PATH_IS_RESTORING_FILE_A_FLAGS_ENABLED, isRestoringFileAFlagsEnabled);
+    res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).send();
+  }
+});
+
+router.get('/is-skip-intro-enabled', async (_req, res) => {
+  try {
+    const emulator = getEmulator();
+    if (emulator) {
+      res.status(200).send(emulator.isSkipIntroEnabled);
+      settingsManager.set(SettingsManager.PATH_IS_SKIP_INTRO_ENABLED, emulator.isSkipIntroEnabled);
+    } else {
+      res.status(200).send(settingsManager.getBoolean(SettingsManager.PATH_IS_SKIP_INTRO_ENABLED));
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send();
+  }
+});
+
+router.post('/is-skip-intro-enabled', async (req, res) => {
+  try {
+    const isSkipIntroEnabled = req.body === 'true';
+    const emulator = getEmulator();
+    if (emulator) {
+      emulator.isSkipIntroEnabled = isSkipIntroEnabled;
+      emulator.setSkipIntroEnabled(emulator.isSkipIntroEnabled);
+    }
+    settingsManager.set(SettingsManager.PATH_IS_SKIP_INTRO_ENABLED, isSkipIntroEnabled);
+    res.status(204).send();
   } catch (error) {
     console.error(error);
     res.status(500).send();

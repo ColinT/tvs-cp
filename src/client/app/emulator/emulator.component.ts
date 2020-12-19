@@ -31,6 +31,7 @@ export class EmulatorComponent implements OnInit, OnDestroy {
 
   public emulatorList: Process[] = [];
 
+  public isSkipIntroEnabled: boolean;
   public isAutoPatchingEnabled: boolean;
   public isRestoringFileAFlagsEnabled: boolean;
 
@@ -48,6 +49,7 @@ export class EmulatorComponent implements OnInit, OnDestroy {
     this.getEmulatorStatus();
     this.getIsAutoPatchingEnabled();
     this.getIsRestoringFileAFlagsEnabled();
+    this.getIsSkipIntroEnabled();
 
     this.checkEmulatorStatusInterval = setInterval(() => {
       this.getEmulatorStatus();
@@ -126,6 +128,32 @@ export class EmulatorComponent implements OnInit, OnDestroy {
         throw error; // TODO Let the user know why the patch request failed.
       });
   }
+
+  async getIsSkipIntroEnabled(): Promise<void> {
+    return this.http
+      .get(`${baseUrl}/api/emulator/is-skip-intro-enabled`)
+      .toPromise()
+      .then((response: string | boolean) => {
+        this.isSkipIntroEnabled = coerceBoolean(response);
+      })
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
+  }
+
+  async setIsSkipIntroEnabled(value: boolean): Promise<void> {
+    this.http
+      .post(`${baseUrl}/api/emulator/is-skip-intro-enabled`, value)
+      .toPromise()
+      .then(() => {
+        this.isSkipIntroEnabled = value;
+      })
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
+  } 
 
   async getIsAutoPatchingEnabled(): Promise<void> {
     return this.http
