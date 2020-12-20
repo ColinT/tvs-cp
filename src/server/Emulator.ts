@@ -35,6 +35,7 @@ export class Emulator {
   public isAutoPatchingEnabled = true;
   public isRestoringFileAFlagsEnabled = false;
   public isSkipIntroEnabled = true;
+  public isInfiniteLivesEnabled = true;
 
   public processId: number;
   public emulatorVersion: EmulatorVersion;
@@ -147,6 +148,13 @@ export class Emulator {
           if (this.isSkipIntroEnabled) {
             this.setSkipIntroEnabled(this.isSkipIntroEnabled);
           }
+        }
+      }
+
+      if (frameCount >= 210) {
+        this.isInfiniteLivesEnabled = this.settingsManager.getBoolean(SettingsManager.PATH_IS_INFINITE_LIVES_ENABLED);
+        if (this.isInfiniteLivesEnabled) {
+          this.writeMemory(0x33b21e, Buffer.from([0x04]));
         }
       }
     });

@@ -17,6 +17,13 @@ enum EmulatorListState {
   LOADED,
 }
 
+enum SettingsPaths {
+  SKIP_INTRO = 'is-skip-intro-enabled',
+  AUTO_PATCH = 'is-auto-patching-enabled',
+  RESTORE_FILE_A = 'is-restoring-file-a-flags-enabled',
+  INFINITE_LIVES = 'is-infinite-lives-enabled',
+}
+
 @Component({
   selector: 'emulator',
   templateUrl: './emulator.component.html',
@@ -31,9 +38,15 @@ export class EmulatorComponent implements OnInit, OnDestroy {
 
   public emulatorList: Process[] = [];
 
-  public isSkipIntroEnabled: boolean;
-  public isAutoPatchingEnabled: boolean;
-  public isRestoringFileAFlagsEnabled: boolean;
+  public SettingsPaths = SettingsPaths;
+  public settings: {
+    [setting in SettingsPaths]: boolean;
+  } = {
+    [SettingsPaths.SKIP_INTRO]: true,
+    [SettingsPaths.AUTO_PATCH]: true,
+    [SettingsPaths.RESTORE_FILE_A]: false,
+    [SettingsPaths.INFINITE_LIVES]: true,
+  };
 
   private checkEmulatorStatusInterval: NodeJS.Timeout;
 
@@ -44,16 +57,17 @@ export class EmulatorComponent implements OnInit, OnDestroy {
     private emulatorService: EmulatorService
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.getEmulatorList();
     this.getEmulatorStatus();
-    this.getIsAutoPatchingEnabled();
-    this.getIsRestoringFileAFlagsEnabled();
-    this.getIsSkipIntroEnabled();
 
     this.checkEmulatorStatusInterval = setInterval(() => {
       this.getEmulatorStatus();
     }, 1000);
+
+    await Promise.all(Object.keys(this.settings).map(async (settingPath) => {
+      await this.getSettingEnabled((settingPath));
+    }));
   }
 
   ngOnDestroy(): void {
@@ -129,12 +143,12 @@ export class EmulatorComponent implements OnInit, OnDestroy {
       });
   }
 
-  async getIsSkipIntroEnabled(): Promise<void> {
+  async getSettingEnabled(settingPath: string): Promise<void> {
     return this.http
-      .get(`${baseUrl}/api/emulator/is-skip-intro-enabled`)
+      .get(`${baseUrl}/api/emulator/${settingPath}`)
       .toPromise()
       .then((response: string | boolean) => {
-        this.isSkipIntroEnabled = coerceBoolean(response);
+        this.settings[settingPath] = coerceBoolean(response);
       })
       .catch((error) => {
         console.error(error);
@@ -142,64 +156,12 @@ export class EmulatorComponent implements OnInit, OnDestroy {
       });
   }
 
-  async setIsSkipIntroEnabled(value: boolean): Promise<void> {
-    this.http
-      .post(`${baseUrl}/api/emulator/is-skip-intro-enabled`, value)
-      .toPromise()
-      .then(() => {
-        this.isSkipIntroEnabled = value;
-      })
-      .catch((error) => {
-        console.error(error);
-        throw error;
-      });
-  } 
-
-  async getIsAutoPatchingEnabled(): Promise<void> {
+  async setSettingEnabled(settingPath: string, value: boolean): Promise<void> {
     return this.http
-      .get(`${baseUrl}/api/emulator/is-auto-patching-enabled`)
-      .toPromise()
-      .then((response: string | boolean) => {
-        this.isAutoPatchingEnabled = coerceBoolean(response);
-      })
-      .catch((error) => {
-        console.error(error);
-        throw error;
-      });
-  }
-
-  async setIsAutoPatchingEnabled(value: boolean): Promise<void> {
-    this.http
-      .post(`${baseUrl}/api/emulator/is-auto-patching-enabled`, value)
+      .post(`${baseUrl}/api/emulator/${settingPath}`, value)
       .toPromise()
       .then(() => {
-        this.isAutoPatchingEnabled = value;
-      })
-      .catch((error) => {
-        console.error(error);
-        throw error;
-      });
-  }
-
-  async getIsRestoringFileAFlagsEnabled(): Promise<void> {
-    return this.http
-      .get(`${baseUrl}/api/emulator/is-restoring-file-a-flags-enabled`)
-      .toPromise()
-      .then((response: string | boolean) => {
-        this.isRestoringFileAFlagsEnabled = coerceBoolean(response);
-      })
-      .catch((error) => {
-        console.error(error);
-        throw error;
-      });
-  }
-
-  async setIsRestoringFileAFlagsEnabled(value: boolean): Promise<void> {
-    this.http
-      .post(`${baseUrl}/api/emulator/is-restoring-file-a-flags-enabled`, value)
-      .toPromise()
-      .then(() => {
-        this.isRestoringFileAFlagsEnabled = value;
+        this.settings[settingPath] = value;
       })
       .catch((error) => {
         console.error(error);
