@@ -1,0 +1,13 @@
+<mat-card-title>Clear File A Saved Flags</mat-card-title>
+<mat-card-content>
+  <p>
+    This will delete the file A flags saved in your settings. TvS will start
+    auto-saving a new set of file A flags, and restore from those instead.
+    <br><br>
+    Use this when starting a new game.
+  </p>
+</mat-card-content>
+<div class="d-flex justify-content-end">
+  <button mat-raised-button color="warn" (click)="handleConfirm()">Confirm</button>
+  <button mat-raised-button (click)="dialogRef.close()">Cancel</button>
+</div>

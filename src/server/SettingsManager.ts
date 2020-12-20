@@ -13,6 +13,14 @@ export class SettingsManager {
   private _path: string;
   private _settings: Settings;
 
+  // #region static paths
+  public static readonly PATH_IS_AUTO_PATCHING_ENABLED = 'emulator/isAutoPatchingEnabled';
+  public static readonly PATH_IS_RESTORING_FILE_A_FLAGS_ENABLED = 'emulator/isRestoringFileAFlagsEnabled';
+  public static readonly PATH_FILE_A_FLAGS_B64 = 'emulator/fileAFlagsBase64';
+  public static readonly PATH_IS_SKIP_INTRO_ENABLED = 'emulator/isSkipIntroEnabled';
+  public static readonly PATH_IS_INFINITE_LIVES_ENABLED = 'emulator/isInfiniteLivesEnabled';
+  // #endregion static paths
+
   /**
    * @constructor
    * @param path - The path to the settings file

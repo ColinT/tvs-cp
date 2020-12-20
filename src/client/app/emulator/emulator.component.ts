@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 
 import type { Process } from 'memoryjs';
 import { EmulatorState } from 'common/states/EmulatorState';
@@ -9,10 +10,18 @@ import { baseUrl } from 'client/config';
 import { coerceBoolean } from 'server/utils';
 import { EmulatorService } from 'client/services/emulator.service';
 import { take } from 'rxjs/operators';
+import { ClearSavedFlagsDialogComponent } from './dialogs/clear-saved-flags-dialog/clear-saved-flags-dialog.component';
 
 enum EmulatorListState {
   LOADING = 1,
   LOADED,
+}
+
+enum SettingsPaths {
+  SKIP_INTRO = 'is-skip-intro-enabled',
+  AUTO_PATCH = 'is-auto-patching-enabled',
+  RESTORE_FILE_A = 'is-restoring-file-a-flags-enabled',
+  INFINITE_LIVES = 'is-infinite-lives-enabled',
 }
 
 @Component({
@@ -29,22 +38,36 @@ export class EmulatorComponent implements OnInit, OnDestroy {
 
   public emulatorList: Process[] = [];
 
-  public isAutoPatchingEnabled: boolean;
-  public isRestoringFileAFlagsEnabled: boolean;
+  public SettingsPaths = SettingsPaths;
+  public settings: {
+    [setting in SettingsPaths]: boolean;
+  } = {
+    [SettingsPaths.SKIP_INTRO]: true,
+    [SettingsPaths.AUTO_PATCH]: true,
+    [SettingsPaths.RESTORE_FILE_A]: false,
+    [SettingsPaths.INFINITE_LIVES]: true,
+  };
 
   private checkEmulatorStatusInterval: NodeJS.Timeout;
 
-  constructor(private http: HttpClient, private snackBar: MatSnackBar, private emulatorService: EmulatorService) {}
+  constructor(
+    private http: HttpClient,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private emulatorService: EmulatorService
+  ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.getEmulatorList();
     this.getEmulatorStatus();
-    this.getIsAutoPatchingEnabled();
-    this.getIsRestoringFileAFlagsEnabled();
 
     this.checkEmulatorStatusInterval = setInterval(() => {
       this.getEmulatorStatus();
     }, 1000);
+
+    await Promise.all(Object.keys(this.settings).map(async (settingPath) => {
+      await this.getSettingEnabled((settingPath));
+    }));
   }
 
   ngOnDestroy(): void {
@@ -120,12 +143,12 @@ export class EmulatorComponent implements OnInit, OnDestroy {
       });
   }
 
-  async getIsAutoPatchingEnabled(): Promise<void> {
+  async getSettingEnabled(settingPath: string): Promise<void> {
     return this.http
-      .get(`${baseUrl}/api/emulator/is-auto-patching-enabled`)
+      .get(`${baseUrl}/api/emulator/${settingPath}`)
       .toPromise()
       .then((response: string | boolean) => {
-        this.isAutoPatchingEnabled = coerceBoolean(response);
+        this.settings[settingPath] = coerceBoolean(response);
       })
       .catch((error) => {
         console.error(error);
@@ -133,25 +156,12 @@ export class EmulatorComponent implements OnInit, OnDestroy {
       });
   }
 
-  async setIsAutoPatchingEnabled(value: boolean): Promise<void> {
-    this.http
-      .post(`${baseUrl}/api/emulator/is-auto-patching-enabled`, value)
-      .toPromise()
-      .then(() => {
-        this.isAutoPatchingEnabled = value;
-      })
-      .catch((error) => {
-        console.error(error);
-        throw error;
-      });
-  }
-
-  async getIsRestoringFileAFlagsEnabled(): Promise<void> {
+  async setSettingEnabled(settingPath: string, value: boolean): Promise<void> {
     return this.http
-      .get(`${baseUrl}/api/emulator/is-restoring-file-a-flags-enabled`)
+      .post(`${baseUrl}/api/emulator/${settingPath}`, value)
       .toPromise()
-      .then((response: string | boolean) => {
-        this.isRestoringFileAFlagsEnabled = coerceBoolean(response);
+      .then(() => {
+        this.settings[settingPath] = value;
       })
       .catch((error) => {
         console.error(error);
@@ -159,16 +169,11 @@ export class EmulatorComponent implements OnInit, OnDestroy {
       });
   }
 
-  async setIsRestoringFileAFlagsEnabled(value: boolean): Promise<void> {
-    this.http
-      .post(`${baseUrl}/api/emulator/is-restoring-file-a-flags-enabled`, value)
-      .toPromise()
-      .then(() => {
-        this.isRestoringFileAFlagsEnabled = value;
-      })
-      .catch((error) => {
-        console.error(error);
-        throw error;
-      });
+  async handleRestoreFlags(): Promise<void> {
+    await this.http.post(`${baseUrl}/api/emulator/flags/fileA/restore`, {}).pipe(take(1)).toPromise();
+  }
+
+  async handleClearSavedFlags(): Promise<void> {
+    await this.dialog.open(ClearSavedFlagsDialogComponent).afterClosed().toPromise();
   }
 }

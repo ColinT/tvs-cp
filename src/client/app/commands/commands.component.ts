@@ -64,6 +64,26 @@ export class CommandsComponent {
           type: 'basic',
         },
         {
+          name: '!cap',
+          description: 'Combines !wing, !vanish, and !metal',
+          content: `
+            Combines the !wing, !vanish, and !metal commands into one using user input.
+            If the exact spelling does not match, the program will try its best to find
+            the closest match.
+          `,
+          type: 'userInput',
+        },
+        {
+          name: '!camera',
+          description: 'Combines !bird, !freezecam, and !upsidedown',
+          content: `
+            Combines the !bird, !freezecam, and !upsidedown commands into one using user
+            input. If the exact spelling does not match, the program will try its best
+            to find the closest match.
+          `,
+          type: 'userInput',
+        },
+        {
           name: '!chatbox',
           description: 'Pop up a chatbox',
           content: `
@@ -232,7 +252,9 @@ export class CommandsComponent {
         {
           name: '!wallbonk',
           description: 'Prevents wallkicking',
-          content: 'Temporarily prevents wallkicking and causes Mario to bonk instead.',
+          content: `
+            Temporarily prevents wallkicking (except firsties) and causes Mario to bonk instead.
+          `,
           type: 'basic',
         },
         {

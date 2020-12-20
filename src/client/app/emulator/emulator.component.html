@@ -14,13 +14,47 @@
     <mat-card-content>
       <mat-list class="d-flex flex-column">
 
-        <mat-checkbox [checked]="isAutoPatchingEnabled" (change)="setIsAutoPatchingEnabled($event.checked)">
+        <mat-checkbox
+          [checked]="settings[SettingsPaths.SKIP_INTRO]"
+          (change)="setSettingEnabled(SettingsPaths.SKIP_INTRO, $event.checked)"
+        >
+          Skip intro
+        </mat-checkbox>
+
+        <mat-checkbox
+          [checked]="settings[SettingsPaths.INFINITE_LIVES]"
+          (change)="setSettingEnabled(SettingsPaths.INFINITE_LIVES, $event.checked)"
+        >
+          Infinite lives
+        </mat-checkbox>
+
+        <mat-checkbox
+          [checked]="settings[SettingsPaths.AUTO_PATCH]"
+          (change)="setSettingEnabled(SettingsPaths.AUTO_PATCH, $event.checked)"
+        >
           Automatically patch emulator on reset
         </mat-checkbox>
 
-        <mat-checkbox [checked]="isRestoringFileAFlagsEnabled" (change)="setIsRestoringFileAFlagsEnabled($event.checked)">
-          Restore file A flags (soft reset only)
-        </mat-checkbox>
+        <div class="d-flex align-items-center flex-wrap">
+          <mat-checkbox
+            [checked]="settings[SettingsPaths.RESTORE_FILE_A]"
+            (change)="setSettingEnabled(SettingsPaths.RESTORE_FILE_A, $event.checked)"
+          >
+            Restore file A flags on reset (via RAM injection)
+          </mat-checkbox>
+
+          <div class="ml-auto">
+            <button mat-raised-button
+              color="accent"
+              class="mx-1"
+              [disabled]="emulatorState === EmulatorState.NOT_CONNECTED || emulatorState === EmulatorState.CONNECTING"
+              (click)="handleRestoreFlags()"
+            >
+              Restore Now
+            </button>
+            <button mat-raised-button color="warn" (click)="handleClearSavedFlags()">Clear Saved Flags</button>
+          </div>
+        </div>
 
       </mat-list>
     </mat-card-content>

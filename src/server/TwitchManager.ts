@@ -91,6 +91,18 @@ export class TwitchManager {
           }
           break;
         }
+        case '!cap': {
+          if (userInput) {
+            emulator.doEffect(`!${this.getLevenshteinResult(userInput, ['wing', 'vanish', 'metal'])}`);
+          }
+          break;
+        }
+        case '!camera': {
+          if (userInput) {
+            emulator.doEffect(`!${this.getLevenshteinResult(userInput, ['bird', 'freezecam', 'upsidedown'])}`);
+          }
+          break;
+        }
         default: {
           emulator.doEffect(`${command}${userInput ? ` ${userInput}` : ''}`);
           break;
@@ -122,5 +134,14 @@ export class TwitchManager {
       }
     }
     return id;
+  }
+
+  private static getLevenshteinResult(query: string, entries: string[]): string {
+    if (entries.length === 0) {
+      throw new Error('entries parameter must contain at least one element');
+    }
+    query = query.toLowerCase();
+    const distances = entries.map((entry) => levenshtein.get(entry, query));
+    return entries[distances.indexOf(Math.min(... distances))];
   }
 }
