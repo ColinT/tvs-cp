@@ -59,6 +59,36 @@ router.post('/patch', async (_req, res) => {
   }
 });
 
+router.get('/is-infinite-lives-enabled', async (_req, res) => {
+  try {
+    const emulator = getEmulator();
+    if (emulator) {
+      res.status(200).send(emulator.isInfiniteLivesEnabled);
+      settingsManager.set(SettingsManager.PATH_IS_INFINITE_LIVES_ENABLED, emulator.isInfiniteLivesEnabled);
+    } else {
+      res.status(200).send(settingsManager.getBoolean(SettingsManager.PATH_IS_INFINITE_LIVES_ENABLED));
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send();
+  }
+});
+
+router.post('/is-infinite-lives-enabled', async (req, res) => {
+  try {
+    const isInfiniteLivesEnabled = req.body === 'true';
+    const emulator = getEmulator();
+    if (emulator) {
+      emulator.isInfiniteLivesEnabled = isInfiniteLivesEnabled;
+    }
+    settingsManager.set(SettingsManager.PATH_IS_INFINITE_LIVES_ENABLED, isInfiniteLivesEnabled);
+    res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).send();
+  }
+});
+
 router.get('/is-auto-patching-enabled', async (_req, res) => {
   try {
     const emulator = getEmulator();
@@ -76,7 +106,6 @@ router.get('/is-auto-patching-enabled', async (_req, res) => {
 
 router.post('/is-auto-patching-enabled', async (req, res) => {
   try {
-    console.log(req.body);
     const isAutoPatchingEnabled = req.body === 'true';
     const emulator = getEmulator();
     if (emulator) {
