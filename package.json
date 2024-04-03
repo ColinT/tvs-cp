@@ -39,7 +39,7 @@
     "bootstrap": "^4.5.3",
     "cors": "^2.8.5",
     "download-chromium": "^3.0.0",
-    "express": "^4.17.3",
+    "express": "^4.19.2",
     "fast-levenshtein": "^3.0.0",
     "memoryjs": "^3.4.0",
     "popper.js": "^1.16.1",
